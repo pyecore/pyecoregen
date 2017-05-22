@@ -16,7 +16,7 @@ class PyTest(TestCommand):
 
 
 setup(
-    name="pyecore",
+    name="pyecoregen",
     version='0.0.1',
     description="Model to text framework for PyEcore, including the Ecore to Python generator",
     long_description=open('README.rst').read(),
