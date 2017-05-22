@@ -6,7 +6,7 @@ import pytest
 import pyecore.ecore as Ecore
 from pyecore.resources import ResourceSet, URI
 from pyecore.utils import DynamicEPackage
-from pygen.ecore import EcoreGenerator
+from pyecoregen.ecore import EcoreGenerator
 
 
 @pytest.fixture(scope='module')

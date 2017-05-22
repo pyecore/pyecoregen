@@ -3,14 +3,12 @@ import itertools
 import os
 import re
 
-import jinja2
-
-from pyecore.ecore import EPackage, EClass, EEnum, EModelElement, EReference, EAttribute
-from pygen.formatter import format_autopep8
-from pygen.jinja import JinjaTask, JinjaGenerator
+import multigen.formatter
+import multigen.jinja
+from pyecore import ecore
 
 
-class EcoreTask(JinjaTask):
+class EcoreTask(multigen.jinja.JinjaTask):
     """
     Base class for Jinja based generation of Pyecore models.
     
@@ -27,7 +25,7 @@ class EcoreTask(JinjaTask):
         yield from (e for e in model.eAllContents() if isinstance(e, self.element_type))
 
     @classmethod
-    def folder_path_for_package(cls, package: EPackage):
+    def folder_path_for_package(cls, package: ecore.EPackage):
         """Returns path to folder holding generated artifact for given element."""
         parent = package.eContainer()
         if parent:
@@ -35,11 +33,11 @@ class EcoreTask(JinjaTask):
         return package.name
 
     @staticmethod
-    def filename_for_element(package: EPackage):
+    def filename_for_element(package: ecore.EPackage):
         """Returns generated file name."""
         raise NotImplementedError
 
-    def relative_path_for_element(self, element: EPackage):
+    def relative_path_for_element(self, element: ecore.EPackage):
         path = os.path.join(self.folder_path_for_package(element),
                             self.filename_for_element(element))
         return path
@@ -49,10 +47,10 @@ class EcorePackageInitTask(EcoreTask):
     """Generation of package init file from Ecore model with Jinja2."""
 
     template_name = 'package.py.tpl'
-    element_type = EPackage
+    element_type = ecore.EPackage
 
     @staticmethod
-    def filename_for_element(package: EPackage):
+    def filename_for_element(package: ecore.EPackage):
         return '__init__.py'
 
 
@@ -60,32 +58,32 @@ class EcorePackageModuleTask(EcoreTask):
     """Generation of package model from Ecore model with Jinja2."""
 
     template_name = 'module.py.tpl'
-    element_type = EPackage
+    element_type = ecore.EPackage
 
     @staticmethod
-    def imported_classifiers(p: EPackage):
+    def imported_classifiers(p: ecore.EPackage):
         """Determines which classifiers have to be imported into given package."""
-        classes = {c for c in p.eClassifiers if isinstance(c, EClass)}
+        classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
 
         supertypes = itertools.chain(*(c.eAllSuperTypes() for c in classes))
         imported = {c for c in supertypes if c.ePackage is not p}
 
         attributes = itertools.chain(*(c.eAttributes for c in classes))
         attributes_types = (a.eType for a in attributes)
-        enum_types = (t for t in attributes_types if isinstance(t, EEnum))
+        enum_types = (t for t in attributes_types if isinstance(t, ecore.EEnum))
         imported |= {t for t in enum_types if t.ePackage is not p}
 
         # sort by owner package name:
         return sorted(imported, key=lambda c: c.ePackage.name)
 
     @staticmethod
-    def classes(p: EPackage):
+    def classes(p: ecore.EPackage):
         """Returns classes in package in ordered by number of bases."""
-        classes = (c for c in p.eClassifiers if isinstance(c, EClass))
+        classes = (c for c in p.eClassifiers if isinstance(c, ecore.EClass))
         return sorted(classes, key=lambda c: len(set(c.eAllSuperTypes())))
 
     @staticmethod
-    def filename_for_element(package: EPackage):
+    def filename_for_element(package: ecore.EPackage):
         return '{}.py'.format(package.name)
 
     def create_template_context(self, element, **kwargs):
@@ -96,12 +94,12 @@ class EcorePackageModuleTask(EcoreTask):
         )
 
 
-class EcoreGenerator(JinjaGenerator):
+class EcoreGenerator(multigen.jinja.JinjaGenerator):
     """Generation of static ecore model classes."""
 
     tasks = [
-        EcorePackageInitTask(formatter=format_autopep8),
-        EcorePackageModuleTask(formatter=format_autopep8),
+        EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
+        EcorePackageModuleTask(formatter=multigen.formatter.format_autopep8),
     ]
 
     templates_path = os.path.join(
@@ -115,20 +113,20 @@ class EcoreGenerator(JinjaGenerator):
         return isinstance(value, type_)
 
     @staticmethod
-    def test_opposite_before_self(value: EReference, references):
+    def test_opposite_before_self(value: ecore.EReference, references):
         try:
             return references.index(value.eOpposite) < references.index(value)
         except ValueError:
             return False
 
     @staticmethod
-    def filter_docstringline(value: EModelElement) -> str:
+    def filter_docstringline(value: ecore.EModelElement) -> str:
         annotation = value.getEAnnotation('http://www.eclipse.org/emf/2002/GenModel')
         doc = annotation.details.get('documentation', '') if annotation else None
         return '"""{}"""\n'.format(doc) if doc else ''
 
     @staticmethod
-    def filter_supertypes(value: EClass):
+    def filter_supertypes(value: ecore.EClass):
         supertypes = ', '.join(t.name for t in value.eSuperTypes)
         return supertypes if supertypes else 'EObject, metaclass=MetaEClass'
 
@@ -141,7 +139,7 @@ class EcoreGenerator(JinjaGenerator):
         return '"""{}"""'.format(value) if value is not None else ''
 
     @staticmethod
-    def filter_refqualifiers(value: EReference):
+    def filter_refqualifiers(value: ecore.EReference):
         qualifiers = dict(
             ordered=value.ordered,
             unique=value.unique,
@@ -153,7 +151,7 @@ class EcoreGenerator(JinjaGenerator):
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
     @staticmethod
-    def filter_attrqualifiers(value: EAttribute):
+    def filter_attrqualifiers(value: ecore.EAttribute):
         qualifiers = dict(
             eType=value.eType.name,
             derived=value.derived,
@@ -167,7 +165,7 @@ class EcoreGenerator(JinjaGenerator):
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
     @staticmethod
-    def filter_all_contents(value: EPackage, type_):
+    def filter_all_contents(value: ecore.EPackage, type_):
         """Returns `eAllContents(type_)`."""
         return (c for c in value.eAllContents() if isinstance(c, type_))
 

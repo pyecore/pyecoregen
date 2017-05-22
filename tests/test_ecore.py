@@ -3,7 +3,7 @@ import os
 import pytest
 
 from pyecore.ecore import EPackage, EClass, EEnum
-from pygen.ecore import EcoreTask, EcorePackageInitTask, EcorePackageModuleTask, EcoreGenerator
+from pyecoregen.ecore import EcoreTask, EcorePackageInitTask, EcorePackageModuleTask, EcoreGenerator
 
 
 def test__ecore_task__filtered_elements():

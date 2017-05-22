@@ -5,7 +5,7 @@ import pytest
 
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
     EParameter
-from pygen.ecore import EcoreGenerator
+from pyecoregen.ecore import EcoreGenerator
 
 
 def generate_meta_model(model, output_dir):
