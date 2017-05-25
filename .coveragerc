@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = pyecoregen
+
+[report]
+exclude_lines =
+    raise NotImplementedError

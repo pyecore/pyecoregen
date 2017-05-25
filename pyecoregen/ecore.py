@@ -135,10 +135,6 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         return '\'{}\''.format(value) if value is not None else ''
 
     @staticmethod
-    def filter_pyquotetriple(value: str):
-        return '"""{}"""'.format(value) if value is not None else ''
-
-    @staticmethod
     def filter_refqualifiers(value: ecore.EReference):
         qualifiers = dict(
             ordered=value.ordered,

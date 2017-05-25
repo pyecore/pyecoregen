@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 
 import pytest
 
@@ -65,3 +66,20 @@ def test__ecore_generator__filter_pyfqn(package_in_hierarchy):
 
     with pytest.raises(ValueError):
         assert EcoreGenerator.filter_pyfqn(package_in_hierarchy, relative_to=4) == '.'
+
+
+def test__ecore_generator__test_opposite_before_self():
+    mock_element = mock.MagicMock()
+    mock_element.eOpposite = mock.sentinel.OPPOSITE
+
+    elements = [mock_element, mock.sentinel.OPPOSITE]
+    assert not EcoreGenerator.test_opposite_before_self(mock_element, elements)
+
+    elements.reverse()
+    assert EcoreGenerator.test_opposite_before_self(mock_element, elements)
+
+    elements = [mock_element]
+    assert not EcoreGenerator.test_opposite_before_self(mock_element, elements)
+
+    elements = [mock.sentinel.OPPOSITE]
+    assert not EcoreGenerator.test_opposite_before_self(mock_element, elements)
