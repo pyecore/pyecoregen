@@ -29,7 +29,7 @@ class PyTest(TestCommand):
 
 setup(
     name="pyecoregen",
-    version='0.0.2',
+    version='0.1.0',
     description="Model to text framework for PyEcore, including the Ecore to Python generator",
     long_description=open('README.rst').read(),
     keywords="model metamodel EMF Ecore code generator",
@@ -43,6 +43,7 @@ setup(
     install_requires=['pyecore', 'pymultigen', 'jinja2', 'autopep8'],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
+    entry_points={'console_scripts': ['pyecoregen = pyecoregen.cli:main']},
 
     license='BSD 3-Clause',
     classifiers=[
