@@ -14,7 +14,6 @@ def generated_library(pygen_output_dir):
     rset = ResourceSet()
     resource = rset.get_resource(URI('input/library.ecore'))
     library_model = resource.contents[0]
-    rset.metamodel_registry[library_model.nsURI] = library_model
     generator = EcoreGenerator()
     generator.generate(library_model, pygen_output_dir)
     return importlib.import_module('library')

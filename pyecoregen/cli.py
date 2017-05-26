@@ -57,9 +57,7 @@ def load_model(ecore_model_path):
     """Load a single Ecore model and return the root package."""
     rset = pyecore.resources.ResourceSet()
     resource = rset.get_resource(pyecore.resources.URI(ecore_model_path))
-    model = resource.contents[0]
-    rset.metamodel_registry[model.nsURI] = model
-    return model
+    return resource.contents[0]
 
 
 if __name__ == '__main__':  # nocover
