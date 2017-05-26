@@ -139,7 +139,9 @@ class {{ c.name }}({{ c | supertypes }}):
 {%- for c in element.eClassifiers if c is type(ecore.EEnum) %}
 {{ generate_enum(c) }}
 {%- endfor %}
-{%- for c in element.eClassifiers if c is type(ecore.EDataType) %}{{ generate_edatatype(c) }}{%- endfor %}
+{%- for c in element.eClassifiers if c is type(ecore.EDataType) and c is not type(ecore.EEnum)%}
+{{ generate_edatatype(c) }}
+{%- endfor %}
 
 {%- for c in classes -%}
 {{ generate_class(c) }}
