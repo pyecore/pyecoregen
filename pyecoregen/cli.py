@@ -1,11 +1,8 @@
 """Command line interface for generation of static Python classes from Ecore model."""
 import argparse
-
-import sys
-
-import logging
-
 import collections
+import logging
+import sys
 
 import pyecore.resources
 from pyecoregen.ecore import EcoreGenerator
