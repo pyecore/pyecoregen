@@ -11,7 +11,7 @@ from pyecore import ecore
 class EcoreTask(multigen.jinja.JinjaTask):
     """
     Base class for Jinja based generation of Pyecore models.
-    
+
     Attributes:
         element_type: Ecore type to be searched in model and to be iterated over.
     """
@@ -156,7 +156,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if value.many:
             qualifiers.update(upper=-1)
         if value.derived:
-            qualifiers.update(name=value.name)
+            qualifiers.update(name="'{v.name}'".format(v=value))
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
@@ -169,7 +169,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     def filter_pyfqn(cls, value, relative_to=0):
         """
         Returns Python form of fully qualified name.
-        
+
         Args:
             relative_to: If greater 0, the returned path is relative to the first n directories.
         """

@@ -23,6 +23,12 @@ getEClassifier = partial(Ecore.getEClassifier, searchspace=eClassifiers)
 
 {#- -------------------------------------------------------------------------------------------- -#}
 
+{%- macro generate_edatatype(e) %}
+{{ e.name }} = EDataType('{{ e.name }}', instanceClassName='{{ e.instanceClassName }}')
+{% endmacro %}
+
+{#- -------------------------------------------------------------------------------------------- -#}
+
 {%- macro generate_class_header(c) -%}
 class {{ c.name }}({{ c | supertypes }}):
     {{ c | docstringline -}}
@@ -133,6 +139,7 @@ class {{ c.name }}({{ c | supertypes }}):
 {%- for c in element.eClassifiers if c is type(ecore.EEnum) %}
 {{ generate_enum(c) }}
 {%- endfor %}
+{%- for c in element.eClassifiers if c is type(ecore.EDataType) %}{{ generate_edatatype(c) }}{%- endfor %}
 
 {%- for c in classes -%}
 {{ generate_class(c) }}
