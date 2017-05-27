@@ -109,7 +109,14 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
     @staticmethod
     def test_type(value, type_):
-        """Jinja test to check object type."""
+        """Jinja test to check if an object's class is exactly the tested type."""
+        return value.__class__ is type_
+
+    @staticmethod
+    def test_kind(value, type_):
+        """Jinja test to check the 'kind' or an object.
+        An object is 'kind' of a type when the object's class isinstance from the tested type.
+        """
         return isinstance(value, type_)
 
     @staticmethod
@@ -208,6 +215,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         environment = super().create_environment(**kwargs)
         environment.tests.update({
             'type': self.test_type,
+            'kind': self.test_kind,
             'opposite_before_self': self.test_opposite_before_self,
         })
         environment.filters.update({
