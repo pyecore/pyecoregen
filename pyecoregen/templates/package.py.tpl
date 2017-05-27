@@ -46,7 +46,7 @@ eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
     {%- endwith %}
 {%- endif %}
 
-otherClassifiers = [{{ element.eClassifiers | select('type', ecore.EEnum) | map(attribute='name') | join(', ') }}]
+otherClassifiers = [{{ element.eClassifiers | select('type', ecore.EDataType) | map(attribute='name') | join(', ') }}]
 
 for classif in otherClassifiers:
     eClassifiers[classif.name] = classif
