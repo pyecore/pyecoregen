@@ -179,3 +179,20 @@ def test_various_datatypes(pygen_output_dir):
     assert gendata2 is mm.Data2
     assert mm.Data2.eType is None
     assert mm.Data2.default_value is None
+
+
+def test_class_with_feature_many(pygen_output_dir):
+    rootpkg = EPackage('manyfeatures')
+    MyClass = EClass('MyClass')
+    rootpkg.eClassifiers.append(MyClass)
+    any_feature = EAttribute('any', EString, upper=-1)
+    MyClass.eStructuralFeatures.append(any_feature)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    generated_class = mm.eClassifiers['MyClass']
+    instance = mm.MyClass()
+
+    assert generated_class is mm.MyClass
+    assert isinstance(mm.MyClass.any, EAttribute)
+    assert instance.any == set()
