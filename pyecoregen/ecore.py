@@ -156,7 +156,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if value.many:
             qualifiers.update(upper=-1)
         if value.derived:
-            qualifiers.update(name="'{v.name}'".format(v=value))
+            qualifiers.update(name='{v.name!r}'.format(v=value))
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
