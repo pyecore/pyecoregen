@@ -4,7 +4,7 @@ import importlib
 import pytest
 
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
-    EParameter
+    EParameter, EString, EDataType
 from pyecoregen.ecore import EcoreGenerator
 
 
@@ -143,3 +143,39 @@ def test_operation(pygen_output_dir):
     # missing required argument:
     with pytest.raises(TypeError):
         instance.do_it(p2=2)
+
+
+def test_class_with_derived_features(pygen_output_dir):
+    rootpkg = EPackage('simpleClasses')
+    MyClass = EClass('MyClass')
+    rootpkg.eClassifiers.append(MyClass)
+    any_feature = EAttribute('any', EString, derived=True)
+    MyClass.eStructuralFeatures.append(any_feature)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    generated_class = mm.eClassifiers['MyClass']
+
+    assert mm.MyClass is generated_class
+    assert isinstance(mm.MyClass._any, EAttribute)
+    assert mm.MyClass._any.derived is True
+    assert mm.MyClass._any.name == 'any'
+
+
+def test_various_datatypes(pygen_output_dir):
+    rootpkg = EPackage('datatypes')
+    data1 = EDataType('Data1', instanceClassName='java.lang.Integer')
+    data2 = EDataType('Data2', instanceClassName='Unknown')
+    rootpkg.eClassifiers.extend([data1, data2])
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    gendata1 = mm.eClassifiers['Data1']
+    gendata2 = mm.eClassifiers['Data2']
+
+    assert gendata1 is mm.Data1
+    assert mm.Data1.eType is int
+    assert mm.Data1.default_value is 0
+    assert gendata2 is mm.Data2
+    assert mm.Data2.eType is None
+    assert mm.Data2.default_value is None
