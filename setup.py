@@ -38,8 +38,9 @@ setup(
     author_email="mike@mpagel.de",
 
     packages=find_packages(exclude=['tests']),
-    # data_files=[('', ['LICENSE', 'README.rst'])],
-    package_data={'pyecoregen': ['templates/*']},
+    package_data={'': ['README.rst', 'LICENSE'],
+                  'pyecoregen': ['templates/*']},
+    include_package_data=True,
     install_requires=['pyecore', 'pymultigen', 'jinja2', 'autopep8'],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
