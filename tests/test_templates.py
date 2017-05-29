@@ -177,8 +177,8 @@ def test_various_datatypes(pygen_output_dir):
     assert mm.Data1.eType is int
     assert mm.Data1.default_value is 0
     assert gendata2 is mm.Data2
-    assert mm.Data2.eType is None
-    assert mm.Data2.default_value is None
+    assert mm.Data2.eType is object
+    assert isinstance(mm.Data2.default_value, object)
 
 
 def test_class_with_feature_many(pygen_output_dir):
