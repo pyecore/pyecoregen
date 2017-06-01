@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 @contextlib.contextmanager
-def adapt_name():
+def pythonic_names():
     original_get_attribute = ecore.ENamedElement.__getattribute__
 
     def get_attribute(self, name):

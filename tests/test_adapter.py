@@ -1,8 +1,8 @@
 from pyecore import ecore
-from pyecoregen.adapter import adapt_name
+from pyecoregen.adapter import pythonic_names
 
 
-def test__name_adapter():
+def test__pythonic_names():
     p = ecore.EPackage('MyPackage')
 
     c1 = ecore.EClass('MyClass')
@@ -18,7 +18,7 @@ def test__name_adapter():
     assert c2.name == 'pass'
     assert a2.name == 'else'
 
-    with adapt_name():
+    with pythonic_names():
         assert c1.name == 'MyClass'
         assert a1.name == 'att'
         assert c2.name == 'pass_'
