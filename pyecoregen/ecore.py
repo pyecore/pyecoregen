@@ -6,6 +6,7 @@ import re
 import multigen.formatter
 import multigen.jinja
 from pyecore import ecore
+from pyecoregen.adapter import pythonic_names
 
 
 class EcoreTask(multigen.jinja.JinjaTask):
@@ -234,3 +235,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         environment.globals.update({'ecore': ecore})
 
         return environment
+
+    def generate(self, model, outfolder):
+        with pythonic_names():
+            super().generate(model, outfolder)

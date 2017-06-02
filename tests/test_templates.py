@@ -196,3 +196,24 @@ def test_class_with_feature_many(pygen_output_dir):
     assert generated_class is mm.MyClass
     assert isinstance(mm.MyClass.any, EAttribute)
     assert instance.any == set()
+
+
+def test_pythonic_names(pygen_output_dir):
+    rootpkg = EPackage('pythonic_names')
+
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+    a1 = EAttribute('att', EString, upper=-1)
+    c1.eStructuralFeatures.append(a1)
+
+    c2 = EClass('pass')
+    rootpkg.eClassifiers.append(c2)
+    a2 = EAttribute('else', EString, upper=-1)
+    c2.eStructuralFeatures.append(a2)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    assert mm.eClassifiers['MyClass'] is mm.MyClass
+    assert mm.eClassifiers['pass_'] is mm.pass_
+    assert isinstance(mm.pass_.else_, EAttribute)
+    assert mm.pass_().else_ == set()
