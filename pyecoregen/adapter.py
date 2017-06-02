@@ -15,7 +15,7 @@ def pythonic_names():
     def get_attribute(self, name):
         value = original_get_attribute(self, name)
 
-        if name == '_ENamedElement__name':
+        if name == 'name':
             while keyword.iskeyword(value):
                 # appending underscores is a typical way of removing name clashes in Python:
                 value += '_'
