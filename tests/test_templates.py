@@ -217,3 +217,19 @@ def test_pythonic_names(pygen_output_dir):
     assert mm.eClassifiers['pass_'] is mm.pass_
     assert isinstance(mm.pass_.else_, EAttribute)
     assert mm.pass_().else_ == set()
+
+
+def test_attribute_with_feature_id(pygen_output_dir):
+    rootpkg = EPackage('id_attribute')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    a1 = EAttribute('att', EString, iD=True)
+    a2 = EAttribute('att2', EString)
+    c1.eStructuralFeatures.extend([a1, a2])
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+    assert isinstance(mm.MyClass.att, EAttribute)
+    assert isinstance(mm.MyClass.att2, EAttribute)
+    assert mm.MyClass.att.iD is True
+    assert mm.MyClass.att2.iD is False

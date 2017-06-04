@@ -160,6 +160,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
             eType=value.eType.name,
             derived=value.derived,
             changeable=value.changeable,
+            iD=value.iD,
         )
         if value.many:
             qualifiers.update(upper=-1)
