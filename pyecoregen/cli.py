@@ -3,6 +3,7 @@ import argparse
 import collections
 import logging
 import sys
+import re
 
 import pyecore.resources
 from pyecoregen.ecore import EcoreGenerator
@@ -53,10 +54,19 @@ def configure_logging(parsed_args):
     )
 
 
+def select_uri_implementation(ecore_model_path):
+    """Select the right URI implementation regarding the Ecore model path schema."""
+    url_pattern = re.compile('^http(s)?://.*')
+    if url_pattern.match(ecore_model_path):
+        return pyecore.resources.resource.HttpURI
+    return pyecore.resources.URI
+
+
 def load_model(ecore_model_path):
     """Load a single Ecore model and return the root package."""
     rset = pyecore.resources.ResourceSet()
-    resource = rset.get_resource(pyecore.resources.URI(ecore_model_path))
+    uri_implementation = select_uri_implementation(ecore_model_path)
+    resource = rset.get_resource(uri_implementation(ecore_model_path))
     return resource.contents[0]
 
 
