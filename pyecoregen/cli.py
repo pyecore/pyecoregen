@@ -9,6 +9,9 @@ import pyecore.resources
 from pyecoregen.ecore import EcoreGenerator
 
 
+URL_PATTERN = re.compile('^http(s)?://.*')
+
+
 def main():
     generate_from_cli(sys.argv[1:])  # nocover
 
@@ -56,8 +59,7 @@ def configure_logging(parsed_args):
 
 def select_uri_implementation(ecore_model_path):
     """Select the right URI implementation regarding the Ecore model path schema."""
-    url_pattern = re.compile('^http(s)?://.*')
-    if url_pattern.match(ecore_model_path):
+    if URL_PATTERN.match(ecore_model_path):
         return pyecore.resources.resource.HttpURI
     return pyecore.resources.URI
 
