@@ -64,6 +64,14 @@ The ``-vv`` is optional to raise verbosity to log level ``DEBUG``. You should se
     2017-05-26 08:06:54,304 DEBUG [multigen.generator] <pyecore.ecore.EPackage object at 0x000001DCF3C61E80> --> '/here/some/folder/library/__init__.py'
     2017-05-26 08:06:54,363 DEBUG [multigen.generator] <pyecore.ecore.EPackage object at 0x000001DCF3C61E80> --> '/here/some/folder/library/library.py'
 
+
+The ``pyecoregen`` command line interface also allows you to generate the classes from a
+remote Ecore XMI file if its "path" starts with ``http(s)://``. The usage does not change:
+
+.. code-block:: bash
+
+    $ pyecoregen -e "http://path/towards/my/ecore" -o some/folder
+
 Programmatic interface
 ~~~~~~~~~~~~~~~~~~~~~~
 
