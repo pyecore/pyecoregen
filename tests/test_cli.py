@@ -1,7 +1,8 @@
 from unittest import mock
 
-import pyecore.ecore
-from pyecoregen.cli import generate_from_cli
+import pyecore
+import pytest
+from pyecoregen.cli import generate_from_cli, select_uri_implementation
 
 
 @mock.patch('pyecoregen.cli.EcoreGenerator')
@@ -19,3 +20,21 @@ def test__generate_from_cli(generator_mock, cwd_module_dir):
     assert isinstance(model, pyecore.ecore.EPackage)
     assert model.name == 'library'
     assert path == 'some/folder'
+
+
+testdata = [
+    ('/tmp/test.ecore', pyecore.resources.URI),
+    ('C:\\test.ecore', pyecore.resources.URI),
+    ('./test.ecore', pyecore.resources.URI),
+    ('test.ecore', pyecore.resources.URI),
+    ('http://test.com/myuri.ecore', pyecore.resources.resource.HttpURI),
+    ('http://test.com/myuri', pyecore.resources.resource.HttpURI),
+    ('https://test.com/myuri.ecore', pyecore.resources.resource.HttpURI),
+    ('https://test.com/mypath?path=uri.ecore', pyecore.resources.resource.HttpURI),
+]
+
+
+@pytest.mark.parametrize("path, implementation", testdata)
+def test__selected_uri(path, implementation):
+    uri = select_uri_implementation(path)
+    assert uri is implementation
