@@ -131,7 +131,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     def filter_docstringline(value: ecore.EModelElement) -> str:
         annotation = value.getEAnnotation('http://www.eclipse.org/emf/2002/GenModel')
         doc = annotation.details.get('documentation', '') if annotation else None
-        return '"""{}"""\n'.format(doc) if doc else ''
+        return '"""{}"""'.format(doc) if doc else ''
 
     @staticmethod
     def filter_supertypes(value: ecore.EClass):

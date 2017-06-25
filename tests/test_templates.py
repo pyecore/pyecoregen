@@ -4,7 +4,7 @@ import importlib
 import pytest
 
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
-    EParameter, EString, EDataType
+    EParameter, EString, EDataType, EAnnotation
 from pyecoregen.ecore import EcoreGenerator
 
 
@@ -233,3 +233,21 @@ def test_attribute_with_feature_id(pygen_output_dir):
     assert isinstance(mm.MyClass.att2, EAttribute)
     assert mm.MyClass.att.iD is True
     assert mm.MyClass.att2.iD is False
+
+
+def test_eoperation_with_documentation(pygen_output_dir):
+    rootpkg = EPackage('eoperation_with_documentation')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    operation = EOperation('do_it')
+    doc = EAnnotation('http://www.eclipse.org/emf/2002/GenModel')
+    operation.eAnnotations.append(doc)
+    doc.details['documentation'] = 'This is a documentation test'
+    c1.eOperations.append(operation)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    instance = mm.MyClass()
+    with pytest.raises(NotImplementedError):
+        instance.do_it()

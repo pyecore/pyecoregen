@@ -108,7 +108,7 @@ class {{ c.name }}({{ c | supertypes }}):
 
 {%- macro generate_operation(o) %}
     def {{ o.name }}(self{{ generate_operation_args(o) }}):
-        {{ o | docstringline -}}
+        {{ o | docstringline }}
         raise NotImplementedError('operation {{ o.name }}(...) not yet implemented')
 {%- endmacro %}
 
