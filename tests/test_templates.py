@@ -115,6 +115,21 @@ def test_class_with_features(pygen_output_dir):
     assert instance.ref is instance
 
 
+def test_class_with_documentation(pygen_output_dir):
+    rootpkg = EPackage('class_doc')
+    class_ = EClass('MyClass')
+    rootpkg.eClassifiers.append(class_)
+
+    doc = EAnnotation('http://www.eclipse.org/emf/2002/GenModel')
+    class_.eAnnotations.append(doc)
+    doc.details['documentation'] = 'This is a documentation test'
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    generated_class = mm.eClassifiers['MyClass']
+    assert generated_class.__doc__ == 'This is a documentation test'
+
+
 def test_operation(pygen_output_dir):
     rootpkg = EPackage('operation')
     class_ = EClass('MyClass')
