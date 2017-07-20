@@ -266,3 +266,26 @@ def test_eoperation_with_documentation(pygen_output_dir):
     instance = mm.MyClass()
     with pytest.raises(NotImplementedError):
         instance.do_it()
+
+
+def test_eattribute_derived_not_changeable(pygen_output_dir):
+    rootpkg = EPackage('changeable_attribute')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    att1 = EAttribute('att1', EString, derived=True, changeable=True)
+    att2 = EAttribute('att2', EString, derived=True, changeable=False)
+
+    c1.eStructuralFeatures.extend([att2, att1])
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    instance = mm.MyClass()
+    assert instance.att1 is None
+    assert instance.att2 is None
+
+    instance.att1 = "test_value"
+    assert instance.att1 == "test_value"
+
+    with pytest.raises(AttributeError):
+        instance.att2 = "test_value2"
