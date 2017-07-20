@@ -54,9 +54,12 @@ class {{ c.name }}({{ c | supertypes }}):
     def {{ d.name }}(self):
         return self._{{ d.name }}
 
+    {%- if d.changeable %}
+
     @{{ d.name }}.setter
     def {{ d.name }}(self, value):
         self._{{ d.name }} = value
+    {% endif %}
 {%- endmacro %}
 
 {#- -------------------------------------------------------------------------------------------- -#}
