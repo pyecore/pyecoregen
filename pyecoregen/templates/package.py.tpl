@@ -1,3 +1,6 @@
+{% if auto_register_package -%}
+    from pyecore.resources import global_registry
+{%- endif %}
 from .{{ element.name }} import getEClassifier, eClassifiers
 from .{{ element.name }} import name, nsURI, nsPrefix, eClass
 {% if element.eClassifiers -%}
@@ -57,3 +60,8 @@ for classif in eClassifiers.values():
 
 for subpack in eSubpackages:
     eClass.eSubpackages.append(subpack.eClass)
+{% if auto_register_package %}
+for pack in [{{ element.name }}, *eSubpackages]:
+    global_registry[pack.nsURI] = pack
+
+{% endif %}
