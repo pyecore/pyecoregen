@@ -61,7 +61,8 @@ for classif in eClassifiers.values():
 for subpack in eSubpackages:
     eClass.eSubpackages.append(subpack.eClass)
 {% if auto_register_package %}
-for pack in [{{ element.name }}, *eSubpackages]:
+register_packages = [{{ element.name }}] + eSubpackages
+for pack in register_packages:
     global_registry[pack.nsURI] = pack
 
 {% endif %}
