@@ -16,14 +16,10 @@ def test__generate_from_cli(generator_mock, cwd_module_dir):
     mock_generate = generator_mock().generate
     model = mock_generator.generate.call_args[0][0]
     path = mock_generator.generate.call_args[0][1]
-    global_vars = mock_generator.generate.call_args[1]['global_vars']
 
     assert isinstance(model, pyecore.ecore.EPackage)
     assert model.name == 'library'
     assert path == 'some/folder'
-    assert not global_vars['auto_register_package']
-    assert global_vars['out_folder'] == 'some/folder'
-    assert global_vars['ecore_model'] == 'input/library.ecore'
 
 
 @mock.patch('pyecoregen.cli.EcoreGenerator')
@@ -31,21 +27,17 @@ def test__generate_from_cli_autoregistration(generator_mock, cwd_module_dir):
     mock_generator = generator_mock()
     mock_generator.generate = mock.MagicMock()
 
-    generate_from_cli(['-e', 'input/library.ecore', '-o', 'some/folder', '-a'])
+    generate_from_cli(['-e', 'input/library.ecore', '-o', 'some/folder', '--auto-register-package'])
 
     # look at arguments of generate call:
     mock_generate = generator_mock().generate
     model = mock_generator.generate.call_args[0][0]
     path = mock_generator.generate.call_args[0][1]
-    global_vars = mock_generator.generate.call_args[1]['global_vars']
-
+    auto_registration = mock_generator.generate.call_args[1]['auto_register_package']
     assert isinstance(model, pyecore.ecore.EPackage)
     assert model.name == 'library'
     assert path == 'some/folder'
-    assert global_vars['auto_register_package']
-    assert global_vars['out_folder'] == 'some/folder'
-    assert global_vars['ecore_model'] == 'input/library.ecore'
-
+    assert auto_registration
 
 @mock.patch('pyecoregen.cli.EcoreGenerator')
 def test__generate_from_cli(generator_mock, cwd_module_dir):

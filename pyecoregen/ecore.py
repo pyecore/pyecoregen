@@ -237,8 +237,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         return environment
 
-    def generate(self, model, outfolder, global_vars=None):
-        if global_vars:
-            self.environment.globals.update(global_vars)
+    def generate(self, model, outfolder, auto_register_package=False):
+        self.environment.globals.update({'auto_register_package': auto_register_package})
         with pythonic_names():
             super().generate(model, outfolder)
