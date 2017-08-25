@@ -32,6 +32,11 @@ def generate_from_cli(args):
         required=True
     )
     parser.add_argument(
+        '--auto-register-package',
+        help="Generate package auto-registration for the PyEcore 'global_registry'.",
+        action='store_true'
+    )
+    parser.add_argument(
         '--verbose',
         '-v',
         help="Increase logging verbosity.",
@@ -42,7 +47,7 @@ def generate_from_cli(args):
 
     configure_logging(parsed_args)
     model = load_model(parsed_args.ecore_model)
-    EcoreGenerator().generate(model, parsed_args.out_folder)
+    EcoreGenerator().generate(model, parsed_args.out_folder, auto_register_package=parsed_args.auto_register_package)
 
 
 def configure_logging(parsed_args):

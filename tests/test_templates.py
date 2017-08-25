@@ -8,9 +8,9 @@ from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt,
 from pyecoregen.ecore import EcoreGenerator
 
 
-def generate_meta_model(model, output_dir):
+def generate_meta_model(model, output_dir, global_vars=None):
     generator = EcoreGenerator()
-    generator.generate(model, output_dir)
+    generator.generate(model, output_dir, global_vars)
     return importlib.import_module(model.name)
 
 
@@ -289,3 +289,15 @@ def test_eattribute_derived_not_changeable(pygen_output_dir):
 
     with pytest.raises(AttributeError):
         instance.att2 = "test_value2"
+
+
+def test_auto_registration_enabled(pygen_output_dir):
+    rootpkg = EPackage('auto_registration')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir, {'auto_register_package' : True})
+
+    from pyecore.resources import global_registry
+    assert mm.nsURI in global_registry
+    assert global_registry[mm.nsURI] is mm.auto_registration
