@@ -212,7 +212,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         return set(value)
 
     def create_global_context(self, **kwargs):
-        return super().create_global_context(auto_register_package=self.auto_register_packageauto_register_package)
+        return super().create_global_context(auto_register_package=self.auto_register_package)
 
     def create_environment(self, **kwargs):
         """
