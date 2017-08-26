@@ -108,6 +108,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         'templates'
     )
 
+    def __init__(self, auto_register_package=False, **kwargs):
+        self.auto_register_package = auto_register_package
+        super().__init__(**kwargs)
+
     @staticmethod
     def test_type(value, type_):
         """Jinja test to check if an object's class is exactly the tested type."""
@@ -207,6 +211,9 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         """Returns set of passed iterable."""
         return set(value)
 
+    def create_global_context(self, **kwargs):
+        return super().create_global_context(auto_register_package=self.auto_register_packageauto_register_package)
+
     def create_environment(self, **kwargs):
         """
         Return a new Jinja environment.
@@ -237,7 +244,6 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         return environment
 
-    def generate(self, model, outfolder, auto_register_package=False):
-        self.environment.globals.update({'auto_register_package': auto_register_package})
+    def generate(self, model, outfolder):
         with pythonic_names():
             super().generate(model, outfolder)
