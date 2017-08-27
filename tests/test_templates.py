@@ -292,7 +292,7 @@ def test_eattribute_derived_not_changeable(pygen_output_dir):
 
 
 def test_auto_registration_enabled(pygen_output_dir):
-    rootpkg = EPackage('auto_registration')
+    rootpkg = EPackage('auto_registration', nsURI='http://autoregister')
     c1 = EClass('MyClass')
     rootpkg.eClassifiers.append(c1)
 

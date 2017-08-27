@@ -47,7 +47,7 @@ def generate_from_cli(args):
 
     configure_logging(parsed_args)
     model = load_model(parsed_args.ecore_model)
-    EcoreGenerator().generate(model, parsed_args.out_folder, auto_register_package=parsed_args.auto_register_package)
+    EcoreGenerator(parsed_args.auto_register_package).generate(model, parsed_args.out_folder)
 
 
 def configure_logging(parsed_args):
