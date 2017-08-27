@@ -8,9 +8,9 @@ from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt,
 from pyecoregen.ecore import EcoreGenerator
 
 
-def generate_meta_model(model, output_dir, global_vars=None):
-    generator = EcoreGenerator()
-    generator.generate(model, output_dir, global_vars)
+def generate_meta_model(model, output_dir, auto_register_package=None):
+    generator = EcoreGenerator(auto_register_package)
+    generator.generate(model, output_dir)
     return importlib.import_module(model.name)
 
 
@@ -296,7 +296,7 @@ def test_auto_registration_enabled(pygen_output_dir):
     c1 = EClass('MyClass')
     rootpkg.eClassifiers.append(c1)
 
-    mm = generate_meta_model(rootpkg, pygen_output_dir, {'auto_register_package' : True})
+    mm = generate_meta_model(rootpkg, pygen_output_dir, auto_register_package=True)
 
     from pyecore.resources import global_registry
     assert mm.nsURI in global_registry
