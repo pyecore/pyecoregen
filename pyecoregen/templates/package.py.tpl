@@ -53,7 +53,7 @@ otherClassifiers = [{{ element.eClassifiers | select('kind', ecore.EDataType) | 
 
 for classif in otherClassifiers:
     eClassifiers[classif.name] = classif
-    classif._container = {{ element.name }}
+    classif.ePackage = eClass
 
 for classif in eClassifiers.values():
     eClass.eClassifiers.append(classif.eClass)
