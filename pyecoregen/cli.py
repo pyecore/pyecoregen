@@ -8,7 +8,6 @@ import re
 import pyecore.resources
 from pyecoregen.ecore import EcoreGenerator
 
-
 URL_PATTERN = re.compile('^http(s)?://.*')
 
 
@@ -37,6 +36,10 @@ def generate_from_cli(args):
         action='store_true'
     )
     parser.add_argument(
+        '--user-module',
+        help="Dotted name of module with user-provided mixins to import from generated classes.",
+    )
+    parser.add_argument(
         '--verbose',
         '-v',
         help="Increase logging verbosity.",
@@ -47,7 +50,10 @@ def generate_from_cli(args):
 
     configure_logging(parsed_args)
     model = load_model(parsed_args.ecore_model)
-    EcoreGenerator(parsed_args.auto_register_package).generate(model, parsed_args.out_folder)
+    EcoreGenerator(
+        auto_register_package=parsed_args.auto_register_package,
+        user_module=parsed_args.user_module
+    ).generate(model, parsed_args.out_folder)
 
 
 def configure_logging(parsed_args):

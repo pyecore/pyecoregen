@@ -9,7 +9,7 @@ from pyecoregen.ecore import EcoreGenerator
 
 
 def generate_meta_model(model, output_dir, auto_register_package=None):
-    generator = EcoreGenerator(auto_register_package)
+    generator = EcoreGenerator(auto_register_package=auto_register_package)
     generator.generate(model, output_dir)
     return importlib.import_module(model.name)
 

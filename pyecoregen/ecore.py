@@ -108,7 +108,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         'templates'
     )
 
-    def __init__(self, auto_register_package=False, **kwargs):
+    def __init__(self, *, auto_register_package=False, **kwargs):
         self.auto_register_package = auto_register_package
         super().__init__(**kwargs)
 

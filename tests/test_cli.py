@@ -23,37 +23,25 @@ def test__generate_from_cli(generator_mock, cwd_module_dir):
 
 
 @mock.patch('pyecoregen.cli.EcoreGenerator')
-def test__generate_from_cli_autoregistration(generator_mock, cwd_module_dir):
-    mock_generator = generator_mock()
-    mock_generator.generate = mock.MagicMock()
-
+def test__generate_from_cli__auto_register_package(generator_mock, cwd_module_dir):
     generate_from_cli(['-e', 'input/library.ecore', '-o', 'some/folder', '--auto-register-package'])
 
-    # look at arguments of generate call:
-    mock_generate = generator_mock().generate
-    model = mock_generator.generate.call_args[0][0]
-    path = mock_generator.generate.call_args[0][1]
-    auto_registration = mock_generator.auto_registration
-    assert isinstance(model, pyecore.ecore.EPackage)
-    assert model.name == 'library'
-    assert path == 'some/folder'
-    assert auto_registration
+    # look at arguments of generator instantiation:
+    auto_register_package = generator_mock.call_args[1]['auto_register_package']
+    assert auto_register_package is True  # make sure we don't interpret mock attribute as `True`
+
 
 @mock.patch('pyecoregen.cli.EcoreGenerator')
-def test__generate_from_cli(generator_mock, cwd_module_dir):
-    mock_generator = generator_mock()
-    mock_generator.generate = mock.MagicMock()
+def test__generate_from_cli__user_module(generator_mock, cwd_module_dir):
+    generate_from_cli([
+        '-e', 'input/library.ecore',
+        '-o', 'some/folder',
+        '--user-module', 'some.pkg.module'
+    ])
 
-    generate_from_cli(['-e', 'input/library.ecore', '-o', 'some/folder'])
-
-    # look at arguments of generate call:
-    mock_generate = generator_mock().generate
-    model = mock_generator.generate.call_args[0][0]
-    path = mock_generator.generate.call_args[0][1]
-
-    assert isinstance(model, pyecore.ecore.EPackage)
-    assert model.name == 'library'
-    assert path == 'some/folder'
+    # look at arguments of generator instantiation:
+    user_module = generator_mock.call_args[1]['user_module']
+    assert user_module == 'some.pkg.module'
 
 
 testdata = [
