@@ -1,15 +1,17 @@
 """Tests for the various features from the code generation templates."""
 import importlib
+from unittest import mock
 
 import pytest
 
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
     EParameter, EString, EDataType, EAnnotation
 from pyecoregen.ecore import EcoreGenerator
+from user_provided.module import MyClassMixin  # search path set in test configuration
 
 
-def generate_meta_model(model, output_dir, auto_register_package=None):
-    generator = EcoreGenerator(auto_register_package=auto_register_package)
+def generate_meta_model(model, output_dir, *, user_module=None, auto_register_package=None):
+    generator = EcoreGenerator(user_module=user_module, auto_register_package=auto_register_package)
     generator.generate(model, output_dir)
     return importlib.import_module(model.name)
 
@@ -301,3 +303,24 @@ def test_auto_registration_enabled(pygen_output_dir):
     from pyecore.resources import global_registry
     assert mm.nsURI in global_registry
     assert global_registry[mm.nsURI] is mm.auto_registration
+
+
+def test_user_module_imported(pygen_output_dir):
+    rootpkg = EPackage('user_module')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    with pytest.raises(ModuleNotFoundError) as ex:
+        mm = generate_meta_model(rootpkg, pygen_output_dir, user_module='some_module')
+        assert 'some_module' in ex.message
+
+
+def test_user_module_derived_from_mixin(pygen_output_dir):
+    rootpkg = EPackage('derived_from_mixin')
+    c1 = EClass('MyClass')
+    rootpkg.eClassifiers.append(c1)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir, user_module='user_provided.module')
+
+    c = mm.MyClass()
+    assert isinstance(c, MyClassMixin)

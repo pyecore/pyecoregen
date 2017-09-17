@@ -96,7 +96,16 @@ class EcorePackageModuleTask(EcoreTask):
 
 
 class EcoreGenerator(multigen.jinja.JinjaGenerator):
-    """Generation of static ecore model classes."""
+    """
+    Generation of static Pyecore model classes.
+
+    Attributes:
+        user_module (str): Dotted module name with user-defined implementations for operations and
+            derived attributes.
+
+        auto_register_package (bool): Flag, whether all generated packages are automatically added
+            to Pyecore's package registry.
+    """
 
     tasks = [
         EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
@@ -108,7 +117,8 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         'templates'
     )
 
-    def __init__(self, *, auto_register_package=False, **kwargs):
+    def __init__(self, *, user_module=None, auto_register_package=False, **kwargs):
+        self.user_module = user_module
         self.auto_register_package = auto_register_package
         super().__init__(**kwargs)
 
@@ -212,7 +222,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         return set(value)
 
     def create_global_context(self, **kwargs):
-        return super().create_global_context(auto_register_package=self.auto_register_package)
+        return super().create_global_context(
+            user_module=self.user_module,
+            auto_register_package=self.auto_register_package
+        )
 
     def create_environment(self, **kwargs):
         """

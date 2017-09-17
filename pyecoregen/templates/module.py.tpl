@@ -5,6 +5,9 @@ from pyecore.ecore import *
 {% for c in imported_classifiers -%}
     from {{ c.ePackage | pyfqn }} import {{ c.name }}
 {% endfor %}
+{% if user_module -%}
+    import {{ user_module }} as _user_module
+{% endif %}
 
 name = '{{ element.name }}'
 nsURI = '{{ element.nsURI | default(boolean=True) }}'
@@ -30,7 +33,10 @@ getEClassifier = partial(Ecore.getEClassifier, searchspace=eClassifiers)
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_class_header(c) -%}
-class {{ c.name }}({{ c | supertypes }}):
+class {{ c.name }}(
+    {%- if user_module %}_user_module.{{ c.name }}Mixin, {% endif -%}
+    {{ c | supertypes -}}
+):
     {{ c | docstringline -}}
 {% endmacro -%}
 
