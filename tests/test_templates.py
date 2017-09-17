@@ -318,6 +318,8 @@ def test_user_module_imported(pygen_output_dir):
 def test_user_module_derived_from_mixin(pygen_output_dir):
     rootpkg = EPackage('derived_from_mixin')
     c1 = EClass('MyClass')
+    c1.eOperations.append(EOperation('do_it'))
+    c1.eStructuralFeatures.append(EAttribute('any', EString, derived=True))
     rootpkg.eClassifiers.append(c1)
 
     mm = generate_meta_model(rootpkg, pygen_output_dir, user_module='user_provided.module')
