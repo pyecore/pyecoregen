@@ -1,4 +1,4 @@
-{% import 'module_utilities.tpl' as modutil -%}
+{% import 'module_utilities.tpl' as modutil with context -%}
 """Definition of meta model '{{ element.name }}'."""
 from functools import partial
 import pyecore.ecore as Ecore
