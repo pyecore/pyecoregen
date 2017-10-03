@@ -100,6 +100,6 @@ is then turning into a keyword argument ``my_param``.
     ``--user-module my.custom_mod`` will make the generated code import mixin classes from a module
     ``my.custom_mod``. A generated class with name ``<name>`` then derives from a mixin
     ``<name>Mixin``, which is expected to be part of the user module. If this option is used, the
-    generator also produces a skeleton file which contains all requires mixin classes and methods
-    they have to provide. Usually you copy parts of this template to your own module, which is then
-    checked into version control all your other code.
+    generator also produces a skeleton file which contains all required mixin classes and methods.
+    Usually you copy parts of this template to your own module, which is then checked into version
+    control all your other code.
