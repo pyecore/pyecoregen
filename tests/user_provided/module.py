@@ -1,8 +1,40 @@
-"""Helper for tests of user_module feature."""
+"""Mixins to be implemented by user.
+
+Implemented for test code in test_templates.py. Search for "user_provided" in test code.
+"""
+
+from unittest import mock
 
 
 class MyClassMixin:
-    """Mixin class, actual implementations set in test cases via mock.patch."""
+    """User defined mixin class for MyClass."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @property
+    def any(self):
+        return self._any
+
+    @any.setter
+    def any(self, value):
+        self._any = value
+
+    def __init__(self, *, any=None, **kwargs):
+        super().__init__()
+
+    do_it = mock.MagicMock()
+
+
+class MyOtherClassMixin:
+    """User defined mixin class for MyOtherClass."""
+
+    @property
+    def other(self):
+        return self._other
+
+    @other.setter
+    def other(self, value):
+        self.mock_other(value)
+        self._other = value
+
+    def __init__(self, *, other=None, **kwargs):
+        super().__init__(**kwargs)
+        self.mock_other = mock.MagicMock()

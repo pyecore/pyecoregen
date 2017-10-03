@@ -7,7 +7,8 @@ import pytest
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
     EParameter, EString, EDataType, EAnnotation
 from pyecoregen.ecore import EcoreGenerator
-from user_provided.module import MyClassMixin  # search path set in test configuration
+from user_provided.module import MyClassMixin, \
+    MyOtherClassMixin  # search path set in test configuration
 
 
 def generate_meta_model(model, output_dir, *, user_module=None, auto_register_package=None):
@@ -321,8 +322,20 @@ def test_user_module_derived_from_mixin(pygen_output_dir):
     c1.eOperations.append(EOperation('do_it'))
     c1.eStructuralFeatures.append(EAttribute('any', EString, derived=True))
     rootpkg.eClassifiers.append(c1)
+    c2 = EClass('MyOtherClass')
+    c2.eStructuralFeatures.append(EAttribute('other', EString, derived=True))
+    c2.eSuperTypes.append(c1)
+    rootpkg.eClassifiers.append(c2)
 
     mm = generate_meta_model(rootpkg, pygen_output_dir, user_module='user_provided.module')
 
-    c = mm.MyClass()
+    c = mm.MyOtherClass(any='any', other='other')
     assert isinstance(c, MyClassMixin)
+    assert isinstance(c, MyOtherClassMixin)
+    assert isinstance(c, mm.MyClass)
+    assert c.any == 'any'
+    c.mock_other.assert_called_once_with('other')
+
+    assert not c.do_it.called
+    c.do_it()
+    assert c.do_it.called
