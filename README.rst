@@ -1,13 +1,13 @@
 pyecoregen - Python code generation from pyecore models
 =======================================================
 
-|pypi-version| |master-build| |coverage| |license|
+|pypiversion| |masterbuild| |coverage| |license|
 
-.. |master-build| image:: https://travis-ci.org/pyecore/pyecoregen.svg?branch=master
-:target: https://travis-ci.org/pyecore/pyecoregen
+.. |pypiversion| image:: https://badge.fury.io/py/pyecoregen.svg
+    :target: https://badge.fury.io/py/pyecoregen
 
-.. |pypi-version| image:: https://badge.fury.io/py/pyecoregen.svg
-:target: https://badge.fury.io/py/pyecoregen
+.. |masterbuild| image:: https://travis-ci.org/pyecore/pyecoregen.svg?branch=master
+    :target: https://travis-ci.org/pyecore/pyecoregen
 
 .. |coverage| image:: https://coveralls.io/repos/github/pyecore/pyecoregen/badge.svg?branch=master
     :target: https://coveralls.io/github/pyecore/pyecoregen?branch=master
