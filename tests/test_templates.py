@@ -311,7 +311,7 @@ def test_user_module_imported(pygen_output_dir):
     c1 = EClass('MyClass')
     rootpkg.eClassifiers.append(c1)
 
-    with pytest.raises(ModuleNotFoundError) as ex:
+    with pytest.raises(ImportError) as ex:
         mm = generate_meta_model(rootpkg, pygen_output_dir, user_module='some_module')
         assert 'some_module' in ex.message
 
