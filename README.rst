@@ -4,10 +4,10 @@ pyecoregen - Python code generation from pyecore models
 |pypi-version| |master-build| |coverage| |license|
 
 .. |master-build| image:: https://travis-ci.org/pyecore/pyecoregen.svg?branch=master
-    :target: https://travis-ci.org/pyecore/pyecoregen
+:target: https://travis-ci.org/pyecore/pyecoregen
 
 .. |pypi-version| image:: https://badge.fury.io/py/pyecoregen.svg
-    :target: https://badge.fury.io/py/pyecoregen
+:target: https://badge.fury.io/py/pyecoregen
 
 .. |coverage| image:: https://coveralls.io/repos/github/pyecore/pyecoregen/badge.svg?branch=master
     :target: https://coveralls.io/github/pyecore/pyecoregen?branch=master
@@ -83,3 +83,23 @@ hold it's root package in ``library_pkg``, you would generate with:
 
     generator = EcoreGenerator()
     generator.generate(library_pkg, 'some/folder')
+
+Generator options
+~~~~~~~~~~~~~~~~~
+
+The end user can control some of the features how the metamodel code is generated. This can be done
+at the command line as well as via programmatic invocation. A command line parameter ``--my-param``
+is then turning into a keyword argument ``my_param``.
+
+``--auto-register-package`` (Default: ``False``)
+    If enabled, the generated packages are automatically added to pyecore's global namespace
+    registry, which makes them available during XMI deserialization.
+
+``--user-module`` (Default: ``None``)
+    If specified, the given string is interpreted as a dotted Python module path. E.g.
+    ``--user-module my.custom_mod`` will make the generated code import mixin classes from a module
+    ``my.custom_mod``. A generated class with name ``<name>`` then derives from a mixin
+    ``<name>Mixin``, which is expected to be part of the user module. If this option is used, the
+    generator also produces a skeleton file which contains all required mixin classes and methods.
+    Usually you copy parts of this template to your own module, which is then checked into version
+    control all your other code.

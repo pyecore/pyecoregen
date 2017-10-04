@@ -95,21 +95,43 @@ class EcorePackageModuleTask(EcoreTask):
         )
 
 
-class EcoreGenerator(multigen.jinja.JinjaGenerator):
-    """Generation of static ecore model classes."""
+class EcorePackageMixinTask(EcorePackageModuleTask):
+    """Generation of optional mixins for user implementations."""
+    template_name = 'mixins.py.skeleton.tpl'
 
-    tasks = [
-        EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
-        EcorePackageModuleTask(formatter=multigen.formatter.format_autopep8),
-    ]
+    @staticmethod
+    def filename_for_element(package: ecore.EPackage):
+        return '{}_mixins.py.skeleton'.format(package.name)
+
+
+class EcoreGenerator(multigen.jinja.JinjaGenerator):
+    """
+    Generation of static Pyecore model classes.
+
+    Attributes:
+        user_module (str): Dotted module name with user-defined implementations for operations and
+            derived attributes.
+
+        auto_register_package (bool): Flag, whether all generated packages are automatically added
+            to Pyecore's package registry.
+    """
 
     templates_path = os.path.join(
         os.path.abspath(os.path.dirname(__file__)),
         'templates'
     )
 
-    def __init__(self, auto_register_package=False, **kwargs):
+    def __init__(self, *, user_module=None, auto_register_package=False, **kwargs):
+        self.user_module = user_module
         self.auto_register_package = auto_register_package
+
+        self.tasks = [
+            EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
+            EcorePackageModuleTask(formatter=multigen.formatter.format_autopep8),
+        ]
+        if self.user_module:
+            self.tasks.append(EcorePackageMixinTask(formatter=multigen.formatter.format_autopep8))
+
         super().__init__(**kwargs)
 
     @staticmethod
@@ -212,7 +234,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         return set(value)
 
     def create_global_context(self, **kwargs):
-        return super().create_global_context(auto_register_package=self.auto_register_package)
+        return super().create_global_context(
+            user_module=self.user_module,
+            auto_register_package=self.auto_register_package
+        )
 
     def create_environment(self, **kwargs):
         """
