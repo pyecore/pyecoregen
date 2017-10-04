@@ -29,7 +29,7 @@ class PyTest(TestCommand):
 
 setup(
     name="pyecoregen",
-    version='0.4.0',
+    version='0.4.1',
     description="Model to text framework for PyEcore, including the Ecore to Python generator",
     long_description=open('README.rst').read(),
     keywords="model metamodel EMF Ecore code generator",
