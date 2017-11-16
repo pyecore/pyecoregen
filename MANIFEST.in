@@ -1,1 +1,1 @@
-include README.rst CHANGELOG.md LICENSE
+include README.rst CHANGELOG.md LICENSE pyecoregen/templates/*
