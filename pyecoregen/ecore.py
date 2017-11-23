@@ -2,7 +2,6 @@
 import itertools
 import os
 import re
-from typing import Set
 
 import multigen.formatter
 import multigen.jinja
@@ -314,7 +313,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
                     value.eResource  # force proxy resolution
 
     @staticmethod
-    def load_all_required_resources(root: ecore.EObject) -> Set[Resource]:
+    def load_all_required_resources(root):
         """
         Returns a set of all the resources on which depends a model root.
 
