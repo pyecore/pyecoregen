@@ -105,7 +105,7 @@ is then turning into a keyword argument ``my_param``.
     control all your other code.
 
 ``--with-dependencies`` (Default: ``False``)
-    If enabled, the generator also generates all the metamodel that are 'dependencies' of the
-    metamodel sets as input. A metamodel dependency is typically a reference from the input
-    metamodel to another ``.ecore``. Please note that this option introduces a slower code
-    generation as all metamodels must be scanned in order to extract the right dependencies.
+    If enabled, the generator also generates code from all metamodels that are *dependencies* of the
+    input metamodel. A metamodel dependency is typically a reference from the input
+    metamodel to another ``.ecore`` file. Please note that this option introduces slower code
+    generation as all metamodels must be scanned in order to determine dependencies.
