@@ -23,9 +23,14 @@ def test_cross_resource_packages(generated_metamodel):
     A = generated_metamodel.A
     B = A.b.eType
     C = B.eClass.eSuperTypes[0].python_class
+    D = B.to_enum.eType
     A_package = A.eClass.ePackage
     B_package = B.eClass.ePackage
     C_package = C.eClass.ePackage
+    D_package = D.eClass.ePackage
     assert A_package is not B_package
     assert A_package is not C_package
     assert B_package is not C_package
+    assert A_package is not D_package
+    assert B_package is not D_package
+    assert C_package is not D_package
