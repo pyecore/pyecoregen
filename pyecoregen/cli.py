@@ -58,7 +58,7 @@ def generate_from_cli(args):
     EcoreGenerator(
         auto_register_package=parsed_args.auto_register_package,
         user_module=parsed_args.user_module,
-        generate_dependencies=parsed_args.with_dependencies
+        with_dependencies=parsed_args.with_dependencies
     ).generate(model, parsed_args.out_folder)
 
 

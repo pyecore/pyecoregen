@@ -148,10 +148,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     )
 
     def __init__(self, *, user_module=None, auto_register_package=False,
-                 generate_dependencies=False, **kwargs):
+                 with_dependencies=False, **kwargs):
         self.user_module = user_module
         self.auto_register_package = auto_register_package
-        self.generate_dependencies = generate_dependencies
+        self.with_dependencies = with_dependencies
 
         self.tasks = [
             EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
@@ -334,7 +334,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     def generate(self, model, outfolder):
         with pythonic_names():
             super().generate(model, outfolder)
-            if self.generate_dependencies and model.eResource:
+            if self.with_dependencies and model.eResource:
                 all_resources = self.load_all_required_resources(model)
                 all_resources.remove(model.eResource)
                 for resource in all_resources:

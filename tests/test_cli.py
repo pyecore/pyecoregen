@@ -44,6 +44,19 @@ def test__generate_from_cli__user_module(generator_mock, cwd_module_dir):
     assert user_module == 'some.pkg.module'
 
 
+@mock.patch('pyecoregen.cli.EcoreGenerator')
+def test__generate_from_cli__with_dependencies(generator_mock, cwd_module_dir):
+    generate_from_cli([
+        '-e', 'input/A.ecore',
+        '-o', 'some/folder',
+        '--with-dependencies'
+    ])
+
+    # look at arguments of generator instantiation:
+    with_dependencies = generator_mock.call_args[1]['with_dependencies']
+    assert with_dependencies is True  # make sure we don't interpret mock attribute as `True`
+
+
 testdata = [
     ('/tmp/test.ecore', pyecore.resources.URI),
     ('C:\\test.ecore', pyecore.resources.URI),
