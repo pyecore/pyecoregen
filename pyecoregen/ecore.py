@@ -317,29 +317,23 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
                         continue
                     value.eResource  # force proxy resolution
 
-    @staticmethod
-    def load_all_required_resources(root):
-        """
-        Returns a set of all the resources on which depends a model root.
-
-        Args:
-            root: the model root that will be traversed to find dependencies.
-        """
-        rset = root.eResource.resource_set
-        before = {v for v in rset.resources.values()}
-        for x in before:
-            EcoreGenerator.resolve_all_proxies(x.contents[0])
-        current = {v for v in rset.resources.values()}
-        diff = current - before
-        for x in diff:
-            current |= EcoreGenerator.load_all_required_resources(x.contents[0])
-        return current
-
-    def generate(self, model, outfolder):
+    def generate(self, model, outfolder, exclude=None):
         with pythonic_names():
+            check_dependency = self.with_dependencies and model.eResource
+            if check_dependency:
+                # proxies are resolved first in order to add the proper resources
+                # in the ResourceSet
+                self.resolve_all_proxies(model)
+
             super().generate(model, outfolder)
-            if self.with_dependencies and model.eResource:
-                all_resources = self.load_all_required_resources(model)
-                all_resources.remove(model.eResource)
-                for resource in all_resources:
-                    super().generate(resource.contents[0], outfolder)
+
+            if check_dependency:
+                if exclude is None:
+                    exclude = set()
+                resource = model.eResource
+                # the current resource had been managed and is excluded from further generations
+                exclude.add(resource)
+                rset = resource.resource_set
+                direct_resources = {r for r in rset.resources.values() if r not in exclude}
+                for resource in direct_resources:
+                    self.generate(resource.contents[0], outfolder, exclude=exclude)
