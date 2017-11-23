@@ -8,7 +8,7 @@ from .{{ element.name }} import name, nsURI, nsPrefix, eClass
 {%- endif %}
 
 {% for package, classifs in imported_classifiers_package.items() -%}
-    from {{ package | pyfqn }} import {{ classifs|map(attribute='name')|join(', ') }}
+    from {{ package|pyfqn }} import {{ classifs|map(attribute='name')|join(', ') }}
 {% endfor -%}
 {%- if not element.eSuperPackage %}
     {%- with %}

@@ -61,7 +61,7 @@ class EcorePackageInitTask(EcoreTask):
         classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
 
         references = itertools.chain(*(c.eAllReferences() for c in classes))
-        references_types = {r.eType for r in references}
+        references_types = (r.eType for r in references)
         imported = {c for c in references_types if c.ePackage is not p}
 
         imported_dict = {}
@@ -139,12 +139,18 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         auto_register_package (bool): Flag, whether all generated packages are automatically added
             to Pyecore's package registry.
+
+        with_dependencies (bool): Flag, whether the code for direct and transitive dependencies of
+            the metamodel sets as input should be generated.
     """
 
     templates_path = os.path.join(
         os.path.abspath(os.path.dirname(__file__)),
         'templates'
     )
+
+    # Maps name of specific Ecore packages to their corresponding Python module path.
+    module_path_map = {'ecore': 'pyecore.ecore'}
 
     def __init__(self, *, user_module=None, auto_register_package=False,
                  with_dependencies=False, **kwargs):
@@ -235,7 +241,6 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         Args:
             relative_to: If greater 0, the returned path is relative to the first n directories.
         """
-        name_translation = {'ecore': 'pyecore.ecore'}
 
         def collect_packages(element, packages):
             parent = element.eContainer()
@@ -254,7 +259,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if relative_to:
             fqn = '.' + fqn
 
-        return name_translation.get(fqn, fqn)
+        return EcoreGenerator.module_path_map.get(fqn, fqn)
 
     @staticmethod
     def filter_set(value):
@@ -321,10 +326,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
             root: the model root that will be traversed to find dependencies.
         """
         rset = root.eResource.resource_set
-        before = {v for _, v in rset.resources.items()}
+        before = {v for v in rset.resources.values()}
         for x in before:
             EcoreGenerator.resolve_all_proxies(x.contents[0])
-        current = {v for _, v in rset.resources.items()}
+        current = {v for v in rset.resources.values()}
         diff = current - before
         for x in diff:
             current |= EcoreGenerator.load_all_required_resources(x.contents[0])
