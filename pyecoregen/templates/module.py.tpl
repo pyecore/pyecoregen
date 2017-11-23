@@ -3,9 +3,9 @@
 from functools import partial
 import pyecore.ecore as Ecore
 from pyecore.ecore import *
-{% for c in imported_classifiers -%}
-    from {{ c.ePackage | pyfqn }} import {{ c.name }}
-{% endfor %}
+{% for package, classifs in imported_classifiers.items() -%}
+    from {{ package | pyfqn }} import {{ classifs|map(attribute='name')|join(', ') }}
+{% endfor -%}
 {% if user_module -%}
     import {{ user_module }} as _user_module
 {% endif %}

@@ -2,10 +2,12 @@
 import itertools
 import os
 import re
+from typing import Set
 
 import multigen.formatter
 import multigen.jinja
 from pyecore import ecore
+from pyecore.resources import Resource
 from pyecoregen.adapter import pythonic_names
 
 
@@ -54,6 +56,27 @@ class EcorePackageInitTask(EcoreTask):
     def filename_for_element(package: ecore.EPackage):
         return '__init__.py'
 
+    @staticmethod
+    def imported_classifiers_package(p: ecore.EPackage):
+        """Determines which classifiers have to be imported into given package."""
+        classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
+
+        references = itertools.chain(*(c.eAllReferences() for c in classes))
+        references_types = {r.eType for r in references}
+        imported = {c for c in references_types if c.ePackage is not p}
+
+        imported_dict = {}
+        for classifier in imported:
+            imported_dict.setdefault(classifier.ePackage, set()).add(classifier)
+
+        return imported_dict
+
+    def create_template_context(self, element, **kwargs):
+        return super().create_template_context(
+            element=element,
+            imported_classifiers_package=self.imported_classifiers_package(element)
+        )
+
 
 class EcorePackageModuleTask(EcoreTask):
     """Generation of package model from Ecore model with Jinja2."""
@@ -63,7 +86,7 @@ class EcorePackageModuleTask(EcoreTask):
 
     @staticmethod
     def imported_classifiers(p: ecore.EPackage):
-        """Determines which classifiers have to be imported into given package."""
+        """Determines which classifiers have to be imported into given module."""
         classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
 
         supertypes = itertools.chain(*(c.eAllSuperTypes() for c in classes))
@@ -74,8 +97,11 @@ class EcorePackageModuleTask(EcoreTask):
         enum_types = (t for t in attributes_types if isinstance(t, ecore.EEnum))
         imported |= {t for t in enum_types if t.ePackage is not p}
 
-        # sort by owner package name:
-        return sorted(imported, key=lambda c: c.ePackage.name)
+        imported_dict = {}
+        for classifier in imported:
+            imported_dict.setdefault(classifier.ePackage, set()).add(classifier)
+
+        return imported_dict
 
     @staticmethod
     def classes(p: ecore.EPackage):
@@ -121,9 +147,11 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         'templates'
     )
 
-    def __init__(self, *, user_module=None, auto_register_package=False, **kwargs):
+    def __init__(self, *, user_module=None, auto_register_package=False,
+                 generate_dependencies=False, **kwargs):
         self.user_module = user_module
         self.auto_register_package = auto_register_package
+        self.generate_dependencies = generate_dependencies
 
         self.tasks = [
             EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
@@ -208,6 +236,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         Args:
             relative_to: If greater 0, the returned path is relative to the first n directories.
         """
+        name_translation = {'ecore': 'pyecore.ecore'}
 
         def collect_packages(element, packages):
             parent = element.eContainer()
@@ -226,7 +255,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if relative_to:
             fqn = '.' + fqn
 
-        return fqn
+        return name_translation.get(fqn, fqn)
 
     @staticmethod
     def filter_set(value):
@@ -269,6 +298,44 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         return environment
 
+    @staticmethod
+    def resolve_all_proxies(root: ecore.EObject):
+        """Resolves all the proxies from an object"""
+        for o in root.eAllContents():
+            if isinstance(o, ecore.EEnum):
+                continue
+            for reference in o.eClass.eAllReferences():
+                values = o.eGet(reference)
+                if not reference.many:
+                    values = [values]
+                for value in values:
+                    if not isinstance(value, ecore.EProxy):
+                        continue
+                    value.eResource  # force proxy resolution
+
+    @staticmethod
+    def load_all_required_resources(root: ecore.EObject) -> Set[Resource]:
+        """
+        Returns a set of all the resources on which depends a model root.
+
+        Args:
+            root: the model root that will be traversed to find dependencies.
+        """
+        rset = root.eResource.resource_set
+        before = {v for _, v in rset.resources.items()}
+        for x in before:
+            EcoreGenerator.resolve_all_proxies(x.contents[0])
+        current = {v for _, v in rset.resources.items()}
+        diff = current - before
+        for x in diff:
+            current |= EcoreGenerator.load_all_required_resources(x.contents[0])
+        return current
+
     def generate(self, model, outfolder):
         with pythonic_names():
             super().generate(model, outfolder)
+            if self.generate_dependencies and model.eResource:
+                all_resources = self.load_all_required_resources(model)
+                all_resources.remove(model.eResource)
+                for resource in all_resources:
+                    super().generate(resource.contents[0], outfolder)

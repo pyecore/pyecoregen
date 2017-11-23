@@ -7,6 +7,9 @@ from .{{ element.name }} import name, nsURI, nsPrefix, eClass
     from .{{ element.name }} import {{ element.eClassifiers | join(', ', attribute='name') }}
 {%- endif %}
 
+{% for package, classifs in imported_classifiers_package.items() -%}
+    from {{ package | pyfqn }} import {{ classifs|map(attribute='name')|join(', ') }}
+{% endfor -%}
 {%- if not element.eSuperPackage %}
     {%- with %}
         {%- set all_references = element | all_contents(ecore.EReference) | list %}
