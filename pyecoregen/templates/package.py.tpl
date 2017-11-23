@@ -38,6 +38,8 @@ __all__ = [{{ element.eClassifiers | map(attribute='name') | map('pyquotesingle'
 
 eSubpackages = [{{ element.eSubpackages | map(attribute='name') | join(', ') }}]
 eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
+{{ element.name }}.eSubpackages = eSubpackages
+{{ element.name }}.eSuperPackage = eSuperPackage
 {% if not element.eSuperPackage %}
     {%- for e in element | all_contents(ecore.EReference) | rejectattr('eOpposite') %}
 {{ e.eContainingClass.name }}.{{ e.name }}.eType = {{ e.eType.name }}
