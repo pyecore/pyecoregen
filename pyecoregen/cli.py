@@ -40,6 +40,11 @@ def generate_from_cli(args):
         help="Dotted name of module with user-provided mixins to import from generated classes.",
     )
     parser.add_argument(
+        '--with-dependencies',
+        help="Generates code for every metamodel the input metamodel depends on.",
+        action='store_true'
+    )
+    parser.add_argument(
         '--verbose',
         '-v',
         help="Increase logging verbosity.",
@@ -52,7 +57,8 @@ def generate_from_cli(args):
     model = load_model(parsed_args.ecore_model)
     EcoreGenerator(
         auto_register_package=parsed_args.auto_register_package,
-        user_module=parsed_args.user_module
+        user_module=parsed_args.user_module,
+        with_dependencies=parsed_args.with_dependencies
     ).generate(model, parsed_args.out_folder)
 
 

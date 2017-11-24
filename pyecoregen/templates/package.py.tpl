@@ -7,6 +7,9 @@ from .{{ element.name }} import name, nsURI, nsPrefix, eClass
     from .{{ element.name }} import {{ element.eClassifiers | join(', ', attribute='name') }}
 {%- endif %}
 
+{% for package, classifs in imported_classifiers_package.items() -%}
+    from {{ package|pyfqn }} import {{ classifs|map(attribute='name')|join(', ') }}
+{% endfor -%}
 {%- if not element.eSuperPackage %}
     {%- with %}
         {%- set all_references = element | all_contents(ecore.EReference) | list %}
@@ -35,6 +38,8 @@ __all__ = [{{ element.eClassifiers | map(attribute='name') | map('pyquotesingle'
 
 eSubpackages = [{{ element.eSubpackages | map(attribute='name') | join(', ') }}]
 eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
+{{ element.name }}.eSubpackages = eSubpackages
+{{ element.name }}.eSuperPackage = eSuperPackage
 {% if not element.eSuperPackage %}
     {%- for e in element | all_contents(ecore.EReference) | rejectattr('eOpposite') %}
 {{ e.eContainingClass.name }}.{{ e.name }}.eType = {{ e.eType.name }}

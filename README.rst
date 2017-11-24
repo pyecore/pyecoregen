@@ -103,3 +103,9 @@ is then turning into a keyword argument ``my_param``.
     generator also produces a skeleton file which contains all required mixin classes and methods.
     Usually you copy parts of this template to your own module, which is then checked into version
     control all your other code.
+
+``--with-dependencies`` (Default: ``False``)
+    If enabled, the generator also generates code from all metamodels that are *dependencies* of the
+    input metamodel. A metamodel dependency is typically a reference from the input
+    metamodel to another ``.ecore`` file. Please note that this option introduces slower code
+    generation as all metamodels must be scanned in order to determine dependencies.
