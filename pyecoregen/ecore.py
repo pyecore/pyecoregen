@@ -317,7 +317,16 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
                         continue
                     value.eResource  # force proxy resolution
 
-    def generate(self, model, outfolder, exclude=None):
+    def generate(self, model, outfolder, *, exclude=None):
+        """
+        Generate model code.
+        
+        Args:
+            model: The meta-model to generate code for.
+            outfolder: Path to the directoty that will contain the generated code.
+            exclude: List of referenced resources for which code was already generated
+                (to prevent regeneration).
+        """
         with pythonic_names():
             check_dependency = self.with_dependencies and model.eResource
             if check_dependency:
