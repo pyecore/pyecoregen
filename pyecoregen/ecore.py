@@ -93,7 +93,7 @@ class EcorePackageModuleTask(EcoreTask):
 
         attributes = itertools.chain(*(c.eAttributes for c in classes))
         attributes_types = (a.eType for a in attributes)
-        imported |= {t for t in attributes_types if t.ePackage not in {p, ecore.eClass}}
+        imported |= {t for t in attributes_types if t.ePackage not in {p, ecore.eClass, None}}
 
         imported_dict = {}
         for classifier in imported:
