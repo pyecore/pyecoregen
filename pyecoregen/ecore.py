@@ -259,7 +259,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if relative_to:
             fqn = '.' + fqn
 
-        return EcoreGenerator.module_path_map.get(fqn, fqn)
+        return cls.module_path_map.get(fqn, fqn)
 
     @staticmethod
     def filter_set(value):
