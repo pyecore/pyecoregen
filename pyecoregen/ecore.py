@@ -93,8 +93,7 @@ class EcorePackageModuleTask(EcoreTask):
 
         attributes = itertools.chain(*(c.eAttributes for c in classes))
         attributes_types = (a.eType for a in attributes)
-        enum_types = (t for t in attributes_types if isinstance(t, ecore.EEnum))
-        imported |= {t for t in enum_types if t.ePackage is not p}
+        imported |= {t for t in attributes_types if t.ePackage not in {p, ecore.eClass}}
 
         imported_dict = {}
         for classifier in imported:
@@ -302,25 +301,10 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         return environment
 
-    @staticmethod
-    def resolve_all_proxies(root: ecore.EObject):
-        """Resolves all the proxies from an object"""
-        for o in root.eAllContents():
-            if isinstance(o, ecore.EEnum):
-                continue
-            for reference in o.eClass.eAllReferences():
-                values = o.eGet(reference)
-                if not reference.many:
-                    values = [values]
-                for value in values:
-                    if not isinstance(value, ecore.EProxy):
-                        continue
-                    value.eResource  # force proxy resolution
-
     def generate(self, model, outfolder, *, exclude=None):
         """
         Generate model code.
-        
+
         Args:
             model: The meta-model to generate code for.
             outfolder: Path to the directoty that will contain the generated code.
@@ -328,14 +312,9 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
                 (to prevent regeneration).
         """
         with pythonic_names():
-            check_dependency = self.with_dependencies and model.eResource
-            if check_dependency:
-                # proxies are resolved first in order to add the proper resources
-                # in the ResourceSet
-                self.resolve_all_proxies(model)
-
             super().generate(model, outfolder)
 
+            check_dependency = self.with_dependencies and model.eResource
             if check_dependency:
                 if exclude is None:
                     exclude = set()

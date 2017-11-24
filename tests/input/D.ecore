@@ -4,4 +4,5 @@
   <eClassifiers xsi:type="ecore:EEnum" name="DEnum">
     <eLiterals name="DVAL"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="MyDatatype" instanceClassName="java.lang.String"/>
 </ecore:EPackage>
