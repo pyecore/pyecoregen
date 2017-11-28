@@ -3,5 +3,6 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="b" nsURI="http://b/1.0" nsPrefix="b">
   <eClassifiers xsi:type="ecore:EClass" name="B" eSuperTypes="C.ecore#//C">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="to_enum" eType="ecore:EEnum D.ecore#//DEnum"/>
+     <eStructuralFeatures xsi:type="ecore:EAttribute" name="custom_datatype" eType="ecore:EDataType D.ecore#//MyDatatype"/>
   </eClassifiers>
 </ecore:EPackage>
