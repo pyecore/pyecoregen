@@ -182,14 +182,16 @@ def test_class_with_derived_features(pygen_output_dir):
 
 def test_various_datatypes(pygen_output_dir):
     rootpkg = EPackage('datatypes')
-    data1 = EDataType('Data1', instanceClassName='java.lang.Integer')
+    data1 = EDataType('Data1', instanceClassName='int')
     data2 = EDataType('Data2', instanceClassName='Unknown')
-    rootpkg.eClassifiers.extend([data1, data2])
+    data3 = EDataType('Data3', instanceClassName='java.lang.Integer')
+    rootpkg.eClassifiers.extend([data1, data2, data3])
 
     mm = generate_meta_model(rootpkg, pygen_output_dir)
 
     gendata1 = mm.eClassifiers['Data1']
     gendata2 = mm.eClassifiers['Data2']
+    gendata3 = mm.eClassifiers['Data3']
 
     assert gendata1 is mm.Data1
     assert mm.Data1.eType is int
@@ -197,6 +199,9 @@ def test_various_datatypes(pygen_output_dir):
     assert gendata2 is mm.Data2
     assert mm.Data2.eType is object
     assert isinstance(mm.Data2.default_value, object)
+    assert gendata3 is mm.Data3
+    assert mm.Data3.eType is int
+    assert mm.Data3.default_value is None
 
 
 def test_class_with_feature_many(pygen_output_dir):
