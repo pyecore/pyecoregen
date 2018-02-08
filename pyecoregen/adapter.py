@@ -8,6 +8,13 @@ from pyecore import ecore
 _logger = logging.getLogger(__name__)
 
 
+def fix_name_clash(value):
+    while keyword.iskeyword(value):
+        # appending underscores is a typical way of removing name clashes in Python:
+        value += '_'
+    return value
+
+
 @contextlib.contextmanager
 def pythonic_names():
     original_get_attribute = ecore.ENamedElement.__getattribute__
@@ -16,9 +23,7 @@ def pythonic_names():
         value = original_get_attribute(self, name)
 
         if name == 'name':
-            while keyword.iskeyword(value):
-                # appending underscores is a typical way of removing name clashes in Python:
-                value += '_'
+            value = fix_name_clash(value)
 
         return value
 

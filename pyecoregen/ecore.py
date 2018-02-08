@@ -7,7 +7,7 @@ import multigen.formatter
 import multigen.jinja
 from pyecore import ecore
 from pyecore.resources import Resource
-from pyecoregen.adapter import pythonic_names
+from pyecoregen.adapter import pythonic_names, fix_name_clash
 
 
 class EcoreTask(multigen.jinja.JinjaTask):
@@ -212,20 +212,35 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
-    @staticmethod
-    def filter_attrqualifiers(value: ecore.EAttribute):
+    @classmethod
+    def filter_attrqualifiers(cls, value: ecore.EAttribute):
         qualifiers = dict(
             eType=value.eType.name,
             derived=value.derived,
             changeable=value.changeable,
-            iD=value.iD,
         )
+        if value.iD:
+            qualifiers.update(iD=value.iD)
         if value.many:
             qualifiers.update(upper=-1)
         if value.derived:
             qualifiers.update(name='{v.name!r}'.format(v=value))
+        if value.defaultValueLiteral:
+            qualifiers.update(default_value=cls.manage_default_value(attribute=value))
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
+
+    @staticmethod
+    def manage_default_value(attribute: ecore.EAttribute):
+        default_value = attribute.defaultValueLiteral
+        if isinstance(attribute.eType, ecore.EEnum):
+            default_value = fix_name_clash(default_value)
+        default_value = attribute.eType.from_string(default_value)
+        if isinstance(default_value, ecore.EEnumLiteral):
+            default_value = '{e.eEnum.name}.{e.name}'.format(e=default_value)
+        elif isinstance(default_value, ecore.EString):
+            default_value = '{d!r}'.format(d=default_value)
+        return default_value
 
     @staticmethod
     def filter_all_contents(value: ecore.EPackage, type_):
