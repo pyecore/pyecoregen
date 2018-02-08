@@ -344,3 +344,27 @@ def test_user_module_derived_from_mixin(pygen_output_dir):
     assert not c.do_it.called
     c.do_it()
     assert c.do_it.called
+
+
+def test_user_module_derived_from_mixin(pygen_output_dir):
+    rootpkg = EPackage('with_default_values')
+    e1 = EEnum('MyEnum', literals=('None_', 'A', 'B'))
+    rootpkg.eClassifiers.append(e1)
+
+    c1 = EClass('MyClass')
+    a1 = EAttribute('a1', EString)
+    a1.defaultValueLiteral = 'my_str'
+
+    a2 = EAttribute('a2', EInt)
+    a2.defaultValueLiteral = '7654321'
+
+    a3 = EAttribute('a3', e1)
+    a3.defaultValueLiteral = 'None'
+    c1.eStructuralFeatures.extend([a1, a2, a3])
+    rootpkg.eClassifiers.append(c1)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    assert mm.MyClass.a1.default_value == 'my_str'
+    assert mm.MyClass.a2.default_value == 7654321
+    assert mm.MyClass.a3.default_value == mm.MyEnum.None_

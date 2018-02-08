@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from pyecore.ecore import EPackage, EClass, EEnum
+from pyecore.ecore import EPackage, EClass, EEnum, EAttribute, EString, EInt
 from pyecoregen.ecore import EcoreTask, EcorePackageInitTask, EcorePackageModuleTask, EcoreGenerator
 
 
@@ -83,3 +83,31 @@ def test__ecore_generator__test_opposite_before_self():
 
     elements = [mock.sentinel.OPPOSITE]
     assert not EcoreGenerator.test_opposite_before_self(mock_element, elements)
+
+
+def test__ecore_generator__manage_default_value_simple_types():
+    attribute = EAttribute('with_default', EString)
+    attribute.defaultValueLiteral = 'str_val'
+    result = EcoreGenerator.manage_default_value(attribute)
+    assert result == "'str_val'"
+
+    attribute.eType = EInt
+    attribute.defaultValueLiteral = '123456'
+    result = EcoreGenerator.manage_default_value(attribute)
+    assert result == 123456
+
+
+def test__ecore_generator__manage_default_value_enumeration():
+    enumeration = EEnum('MyEnum', literals=('None_', 'A', 'B'))
+    attribute = EAttribute('with_default', enumeration)
+    attribute.defaultValueLiteral = 'A'
+    result = EcoreGenerator.manage_default_value(attribute)
+    assert result == 'MyEnum.A'
+
+    attribute.defaultValueLiteral = 'None_'
+    result = EcoreGenerator.manage_default_value(attribute)
+    assert result == 'MyEnum.None_'
+
+    attribute.defaultValueLiteral = 'None'
+    result = EcoreGenerator.manage_default_value(attribute)
+    assert result == 'MyEnum.None_'
