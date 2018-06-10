@@ -5,12 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## 0.4.4
-### Added
-
 - Added generation of "many" derived `EStructuralFeature` as `EDerivedCollection`.
 
 ### Fixed
-- Generation of "single" derived `EStructuralFeature`.
+- Missing genration of "single" derived `EReference`.
 
 ## 0.4.3
 ### Added
