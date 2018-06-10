@@ -289,11 +289,13 @@ def test_eattribute_derived_not_changeable(pygen_output_dir):
     mm = generate_meta_model(rootpkg, pygen_output_dir)
 
     instance = mm.MyClass()
-    assert instance.att1 is None
-    assert instance.att2 is None
+    with pytest.raises(NotImplementedError):
+        instance.att1
+    with pytest.raises(NotImplementedError):
+        instance.att2
 
-    instance.att1 = "test_value"
-    assert instance.att1 == "test_value"
+    with pytest.raises(NotImplementedError):
+        instance.att1 == "test_value"
 
     with pytest.raises(AttributeError):
         instance.att2 = "test_value2"
@@ -321,7 +323,7 @@ def test_user_module_imported(pygen_output_dir):
         assert 'some_module' in ex.message
 
 
-def test_user_module_derived_from_mixin(pygen_output_dir):
+def test_user_module_derived_from_mixin_(pygen_output_dir):
     rootpkg = EPackage('derived_from_mixin')
     c1 = EClass('MyClass')
     c1.eOperations.append(EOperation('do_it'))
@@ -329,6 +331,7 @@ def test_user_module_derived_from_mixin(pygen_output_dir):
     rootpkg.eClassifiers.append(c1)
     c2 = EClass('MyOtherClass')
     c2.eStructuralFeatures.append(EAttribute('other', EString, derived=True))
+    c2.eStructuralFeatures.append(EReference('toc', c1, derived=True))
     c2.eSuperTypes.append(c1)
     rootpkg.eClassifiers.append(c2)
 
@@ -345,8 +348,11 @@ def test_user_module_derived_from_mixin(pygen_output_dir):
     c.do_it()
     assert c.do_it.called
 
+    assert isinstance(mm.MyOtherClass._toc, EReference)
+    assert mm.MyOtherClass._toc.name == 'toc'
 
-def test_user_module_derived_from_mixin(pygen_output_dir):
+
+def test_user_module_default_values(pygen_output_dir):
     rootpkg = EPackage('with_default_values')
     e1 = EEnum('MyEnum', literals=('None_', 'A', 'B'))
     rootpkg.eClassifiers.append(e1)
@@ -368,3 +374,34 @@ def test_user_module_derived_from_mixin(pygen_output_dir):
     assert mm.MyClass.a1.default_value == 'my_str'
     assert mm.MyClass.a2.default_value == 7654321
     assert mm.MyClass.a3.default_value == mm.MyEnum.None_
+
+
+def test_user_module_derived_collection(pygen_output_dir):
+    rootpkg = EPackage('derived_collection')
+    c1 = EClass('MyClass')
+    c1.eStructuralFeatures.append(EAttribute('any', EString, derived=True, upper=-1))
+    rootpkg.eClassifiers.append(c1)
+    c2 = EClass('MyOtherClass')
+    c2.eStructuralFeatures.append(EReference('other', c1, derived=True, upper=-1))
+    c2.eSuperTypes.append(c1)
+    rootpkg.eClassifiers.append(c2)
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+
+    c = mm.MyOtherClass()
+    assert isinstance(c, mm.MyOtherClass)
+    assert isinstance(c, mm.MyClass)
+    with pytest.raises(AttributeError):
+        len(c.any)
+    with pytest.raises(AttributeError):
+        len(c.other)
+
+    with pytest.raises(AttributeError):
+        c.any.append('testValue')
+
+    d = mm.MyClass()
+    assert not isinstance(d, mm.MyOtherClass)
+    assert isinstance(d, mm.MyClass)
+
+    with pytest.raises(AttributeError):
+        c.other.append(d)

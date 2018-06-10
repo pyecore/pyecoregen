@@ -27,6 +27,9 @@
     <eAnnotations xmi:id="_cPfS7h9KEeeOINGRvT6ccg" source="genmymodel">
       <details xmi:id="_cPfS7x9KEeeOINGRvT6ccg" key="uuid" value="_5AMH4MSREDSrHKQOAiwNVw"/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_cPfS6R9KEeeOINGRvT63456" transient="true" derived="true" name="ages" upperBound="-1">
+        <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_cPfS8B9KEeeOINGRvT6ccg" name="name">
       <eAnnotations xmi:id="_cPfS8R9KEeeOINGRvT6ccg" source="genmymodel">
         <details xmi:id="_cPfS8h9KEeeOINGRvT6ccg" key="uuid" value="__hNk4MSREDSrHKQOAiwNVw"/>
@@ -54,6 +57,7 @@
         <details xmi:id="_cPfTAh9KEeeOINGRvT6ccg" key="uuid" value="_ejBQEMSSEDSrHKQOAiwNVw"/>
       </eAnnotations>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_cPfS-B9KEeeOINGRvT6123" name="moreThan20" upperBound="-1" eType="_cPfS4h9KEeeOINGRvT6ccg" containment="true" derived="true" transient="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" xmi:id="_cPfTBB9KEeeOINGRvT6ccg" name="Writer">
     <eAnnotations xmi:id="_cPfTBR9KEeeOINGRvT6ccg" source="genmymodel">
