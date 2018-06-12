@@ -13,7 +13,7 @@ pyecoregen - Python code generation from pyecore models
     :target: https://coveralls.io/github/pyecore/pyecoregen?branch=master
 
 .. |license| image:: https://img.shields.io/badge/license-New%20BSD-blue.svg
-    :target: https://raw.githubusercontent.com/pyecore/pyecoregen/develop/LICENSE
+    :target: https://raw.githubusercontent.com/pyecore/pyecoregen/master/LICENSE
 
 .. contents:: :depth: 2
 
