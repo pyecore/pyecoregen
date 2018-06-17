@@ -219,7 +219,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         elif value.derived:
             qualifiers.update(name='{v.name!r}'.format(v=value))
         if value.transient:
-            qualifiers.update(transient=value.transient)
+            qualifiers.update(transient=True)
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
@@ -239,7 +239,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         if value.defaultValueLiteral:
             qualifiers.update(default_value=cls.manage_default_value(attribute=value))
         if value.transient:
-            qualifiers.update(transient=value.transient)
+            qualifiers.update(transient=True)
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
@@ -315,7 +315,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         environment.filters.update({
             'docstringline': self.filter_docstringline,
             'pyquotesingle': self.filter_pyquotesingle,
-            'derivename': self.filter_derived_name,
+            'derivedname': self.filter_derived_name,
             'refqualifiers': self.filter_refqualifiers,
             'attrqualifiers': self.filter_attrqualifiers,
             'supertypes': self.filter_supertypes,

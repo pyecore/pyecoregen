@@ -28,14 +28,14 @@ class {{ c.name }}Mixin:
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_attribute(a) -%}
-    {{ a | derivename }} = EAttribute({{ a | attrqualifiers }}
+    {{ a | derivedname }} = EAttribute({{ a | attrqualifiers }}
                                       {%- if a.derived and a.many %}, {{ generate_derived_fragment(a) }}{% endif %})
 {%- endmacro %}
 
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_reference(r) -%}
-    {{ r | derivename }} = EReference({{ r | refqualifiers }}
+    {{ r | derivedname }} = EReference({{ r | refqualifiers }}
                                       {%- if r.derived and r.many %}, {{ generate_derived_fragment(r) }}{% endif %})
 {%- endmacro %}
 
