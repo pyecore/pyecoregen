@@ -42,13 +42,13 @@ eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
 {{ element.name }}.eSuperPackage = eSuperPackage
 {% if not element.eSuperPackage %}
     {%- for e in element | all_contents(ecore.EReference) | rejectattr('eOpposite') %}
-{{ e.eContainingClass.name }}.{{ e.name }}.eType = {{ e.eType.name }}
+{{ e.eContainingClass.name }}.{{ e | derivedname }}.eType = {{ e.eType.name }}
     {%- endfor %}
     {%- with opposites = element | all_contents(ecore.EReference) | selectattr('eOpposite') | list %}
         {%- for e in opposites %}
-{{ e.eContainingClass.name }}.{{ e.name }}.eType = {{ e.eType.name }}
+{{ e.eContainingClass.name }}.{{ e | derivedname }}.eType = {{ e.eType.name }}
             {%- if e is opposite_before_self(opposites) %}
-{{ e.eContainingClass.name }}.{{ e.name }}.eOpposite = {{ e.eOpposite.eContainingClass.name }}.{{ e.eOpposite.name }}
+{{ e.eContainingClass.name }}.{{ e | derivedname }}.eOpposite = {{ e.eOpposite.eContainingClass.name }}.{{ e.eOpposite.name }}
             {%- endif %}
         {%- endfor %}
     {%- endwith %}

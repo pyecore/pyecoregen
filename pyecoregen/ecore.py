@@ -62,7 +62,7 @@ class EcorePackageInitTask(EcoreTask):
 
         references = itertools.chain(*(c.eAllReferences() for c in classes))
         references_types = (r.eType for r in references)
-        imported = {c for c in references_types if c.ePackage is not p}
+        imported = {c for c in references_types if getattr(c, 'ePackage', p) is not p}
 
         imported_dict = {}
         for classifier in imported:
@@ -201,14 +201,25 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         return '\'{}\''.format(value) if value is not None else ''
 
     @staticmethod
+    def filter_derived_name(value: ecore.EStructuralFeature):
+        if value.derived and not value.many:
+            return '_' + value.name
+        return value.name
+
+    @staticmethod
     def filter_refqualifiers(value: ecore.EReference):
         qualifiers = dict(
             ordered=value.ordered,
             unique=value.unique,
             containment=value.containment,
+            derived=value.derived,
         )
         if value.many:
             qualifiers.update(upper=-1)
+        elif value.derived:
+            qualifiers.update(name='{v.name!r}'.format(v=value))
+        if value.transient:
+            qualifiers.update(transient=True)
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
@@ -223,10 +234,12 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
             qualifiers.update(iD=value.iD)
         if value.many:
             qualifiers.update(upper=-1)
-        if value.derived:
+        elif value.derived:
             qualifiers.update(name='{v.name!r}'.format(v=value))
         if value.defaultValueLiteral:
             qualifiers.update(default_value=cls.manage_default_value(attribute=value))
+        if value.transient:
+            qualifiers.update(transient=True)
 
         return ', '.join('{}={}'.format(k, v) for k, v in qualifiers.items())
 
@@ -302,6 +315,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
         environment.filters.update({
             'docstringline': self.filter_docstringline,
             'pyquotesingle': self.filter_pyquotesingle,
+            'derivedname': self.filter_derived_name,
             'refqualifiers': self.filter_refqualifiers,
             'attrqualifiers': self.filter_attrqualifiers,
             'supertypes': self.filter_supertypes,

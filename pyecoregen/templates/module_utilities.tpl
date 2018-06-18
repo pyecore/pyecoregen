@@ -28,29 +28,42 @@ class {{ c.name }}Mixin:
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_attribute(a) -%}
-    {% if a.derived %}_{% endif -%}
-    {{ a.name }} = EAttribute({{ a | attrqualifiers }})
+    {{ a | derivedname }} = EAttribute({{ a | attrqualifiers }}
+                                      {%- if a.derived and a.many %}, {{ generate_derived_fragment(a) }}{% endif %})
 {%- endmacro %}
 
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_reference(r) -%}
-    {{ r.name }} = EReference({{ r | refqualifiers }})
+    {{ r | derivedname }} = EReference({{ r | refqualifiers }}
+                                      {%- if r.derived and r.many %}, {{ generate_derived_fragment(r) }}{% endif %})
 {%- endmacro %}
+
+{%- macro generate_derived_fragment(f) -%}
+derived_class={% if user_module %}_user_module.{% endif %}Derived{{ f.name | capitalize }}
+{%- endmacro -%}
 
 {#- -------------------------------------------------------------------------------------------- -#}
 
-{%- macro generate_derived_attribute(d) -%}
+{%- macro generate_derived_single(d) -%}
     @property
     def {{ d.name }}(self):
-        return self._{{ d.name }}
+        raise NotImplementedError('Missing implementation for {{ d.name }}')
 
     {%- if d.changeable %}
 
     @{{ d.name }}.setter
     def {{ d.name }}(self, value):
-        self._{{ d.name }} = value
+        raise NotImplementedError('Missing implementation for {{ d.name }}')
     {% endif %}
+{%- endmacro %}
+
+{#- -------------------------------------------------------------------------------------------- -#}
+
+{%- macro generate_derived_collection(d) -%}
+
+class Derived{{ d.name | capitalize }}(EDerivedCollection):
+    pass
 {%- endmacro %}
 
 {#- -------------------------------------------------------------------------------------------- -#}
@@ -117,6 +130,10 @@ class {{ c.name }}Mixin:
 
 {%- macro generate_class(c) %}
 
+{% if not user_module %}{% for d in c.eStructuralFeatures | selectattr('derived') | selectattr('many') %}
+{{ generate_derived_collection(d) }}
+{% endfor %}{% endif %}
+
 {% if c.abstract %}@abstract
 {% endif -%}
 {{ generate_class_header(c) }}
@@ -126,8 +143,8 @@ class {{ c.name }}Mixin:
 {%- for r in c.eReferences %}
     {{ generate_reference(r) -}}
 {% endfor %}
-{% if not user_module %}{% for d in c.eAttributes | selectattr('derived')  %}
-    {{ generate_derived_attribute(d) }}
+{% if not user_module %}{% for d in c.eStructuralFeatures | selectattr('derived') | rejectattr('many') %}
+    {{ generate_derived_single(d) }}
 {% endfor %}{% endif %}
 {{- generate_class_init(c) }}
 {% if not user_module %}{% for o in c.eOperations %}
@@ -139,9 +156,13 @@ class {{ c.name }}Mixin:
 
 {%- macro generate_mixin(c) %}
 
+{% for d in c.eStructuralFeatures | selectattr('derived') | selectattr('many')  %}
+{{ generate_derived_collection(d) }}
+{% endfor %}
+
 {{ generate_mixin_header(c) }}
-{% for d in c.eAttributes | selectattr('derived')  %}
-    {{ generate_derived_attribute(d) }}
+{% for d in c.eStructuralFeatures | selectattr('derived') | rejectattr('many') %}
+    {{ generate_derived_single(d) }}
 {% endfor %}
 {{- generate_mixin_init(c) }}
 {% for o in c.eOperations %}

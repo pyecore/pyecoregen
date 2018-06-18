@@ -164,3 +164,13 @@ def test_static_init_bad_argument(generated_library):
 def test_static_init_dynamic_epackage_bad_value(generated_library):
     with pytest.raises(Ecore.BadValueError):
         DynamicEPackage(generated_library)
+
+
+def test_static_derived_attributes(generated_library):
+    lib = generated_library.Library()
+    with pytest.raises(AttributeError):
+        len(lib.ages)
+    with pytest.raises(AttributeError):
+        len(lib.moreThan20)
+    with pytest.raises(AttributeError):
+        lib.ages.append(5)
