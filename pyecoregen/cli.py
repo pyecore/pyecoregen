@@ -50,6 +50,10 @@ def generate_from_cli(args):
         help="Increase logging verbosity.",
         action='count'
     )
+    parser.add_argument(
+        '--textX',
+        help="Generate textX compatible classes",
+        action='store_true')
 
     parsed_args = parser.parse_args(args)
 
@@ -58,7 +62,8 @@ def generate_from_cli(args):
     EcoreGenerator(
         auto_register_package=parsed_args.auto_register_package,
         user_module=parsed_args.user_module,
-        with_dependencies=parsed_args.with_dependencies
+        with_dependencies=parsed_args.with_dependencies,
+        textX=parsed_args.textX
     ).generate(model, parsed_args.out_folder)
 
 

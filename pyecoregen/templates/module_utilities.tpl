@@ -1,5 +1,16 @@
 {%- macro generate_enum(e) %}
-{{ e.name }} = EEnum('{{ e.name }}', literals=[{{ e.eLiterals | map(attribute='name') | map('pyquotesingle') | join(', ') }}])
+{% set name = e.name %}
+{% if textX %}
+    {% set name = e.name + 'ENUM' %}
+{% endif %}
+{{ name }} = EEnum('{{ e.name }}', literals=[{{ e.eLiterals | map(attribute='name') | map('pyquotesingle') | join(', ') }}])
+{%- if textX %}
+class {{ e.name }}(EEnum):
+
+    def __init__(self, name=None, default_value=None, literals=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__dict__.update({{ name }}.from_string(self.value).__dict__)
+{%- endif %}
 {% endmacro %}
 
 {#- -------------------------------------------------------------------------------------------- -#}
@@ -77,8 +88,12 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 
 {%- macro generate_feature_init(feature) %}
     {%- if feature.upperBound == 1 %}
+        {%- if not textX %}
         if {{ feature.name }} is not None:
             self.{{ feature.name }} = {{ feature.name }}
+        {%- else %}
+        self.{{ feature.name }} = {{ feature.name }}
+        {%- endif %}
     {%- else %}
         if {{ feature.name }}:
             self.{{ feature.name }}.extend({{ feature.name }})
@@ -89,12 +104,11 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 
 {%- macro generate_class_init(c) %}
     def __init__(self{{ generate_class_init_args(c) }}, **kwargs):
-    {%- if not c.eSuperTypes %}
+    {%- if not textX %}
         if kwargs:
             raise AttributeError('unexpected arguments: {}'.format(kwargs))
     {%- endif %}
-
-        super().__init__({% if c.eSuperTypes %}**kwargs{% endif %})
+        super().__init__({% if c.eSuperTypes or textX %}**kwargs{% endif %})
     {%- for feature in c.eStructuralFeatures | reject('type', ecore.EReference) %}
     {{ generate_feature_init(feature) }}
     {%- endfor %}
@@ -129,7 +143,6 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_class(c) %}
-
 {% if not user_module %}{% for d in c.eStructuralFeatures | selectattr('derived') | selectattr('many') %}
 {{ generate_derived_collection(d) }}
 {% endfor %}{% endif %}

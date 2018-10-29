@@ -34,6 +34,10 @@ from .. import {{ element.eSuperPackage.name }}
 from . import {{ sub.name }}
 {% endfor %}
 
+{% if textX %}
+classes = [{{ element.eClassifiers | map(attribute='name') | join(', ') }}]
+{% endif %}
+
 __all__ = [{{ element.eClassifiers | map(attribute='name') | map('pyquotesingle') | join(', ') }}]
 
 eSubpackages = [{{ element.eSubpackages | map(attribute='name') | join(', ') }}]

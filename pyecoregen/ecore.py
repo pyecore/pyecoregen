@@ -141,6 +141,8 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
 
         with_dependencies (bool): Flag, whether the code for direct and transitive dependencies of
             the metamodel sets as input should be generated.
+
+        textX (bool): Flag, whether textX compatible code should be generated.
     """
 
     templates_path = os.path.join(
@@ -152,10 +154,11 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     module_path_map = {'ecore': 'pyecore.ecore'}
 
     def __init__(self, *, user_module=None, auto_register_package=False,
-                 with_dependencies=False, **kwargs):
+                 with_dependencies=False, textX=False, **kwargs):
         self.user_module = user_module
         self.auto_register_package = auto_register_package
         self.with_dependencies = with_dependencies
+        self.textX = textX
 
         self.tasks = [
             EcorePackageInitTask(formatter=multigen.formatter.format_autopep8),
@@ -296,7 +299,8 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     def create_global_context(self, **kwargs):
         return super().create_global_context(
             user_module=self.user_module,
-            auto_register_package=self.auto_register_package
+            auto_register_package=self.auto_register_package,
+            textX=self.textX
         )
 
     def create_environment(self, **kwargs):
