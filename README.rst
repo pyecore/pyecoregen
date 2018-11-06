@@ -109,3 +109,10 @@ is then turning into a keyword argument ``my_param``.
     input metamodel. A metamodel dependency is typically a reference from the input
     metamodel to another ``.ecore`` file. Please note that this option introduces slower code
     generation as all metamodels must be scanned in order to determine dependencies.
+
+``--textX`` (Default: ``False``)
+	If enabled, the generator generates textX compatible classes. The generated classes should be passed
+	as `custom classes`_ to textX metamodel. The classes can be found in the generated ``classes`` variable.
+	Using the generated classes will result in an ecore and textX compatible model.
+
+	.. _custom classes: https://textx.readthedocs.io/en/latest/metamodel/#custom-classes
