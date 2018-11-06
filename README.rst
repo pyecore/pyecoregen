@@ -112,7 +112,7 @@ is then turning into a keyword argument ``my_param``.
 
 ``--textX`` (Default: ``False``)
 	If enabled, the generator generates textX compatible classes. The generated classes should be passed
-	as `custom classes`_ to textX metamodel. The classes can be found in the generated ``classes`` variable.
+	as `custom classes`_ to a metamodel. The classes can be found in the generated ``classes`` variable.
 	Using the generated classes will result in an ecore and textX compatible model.
 
 	.. _custom classes: https://textx.readthedocs.io/en/latest/metamodel/#custom-classes

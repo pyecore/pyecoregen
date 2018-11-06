@@ -104,7 +104,7 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 
 {%- macro generate_class_init(c) %}
     def __init__(self{{ generate_class_init_args(c) }}, **kwargs):
-    {%- if not textX %}
+    {%- if not c.eSuperTypes and not textX %}
         if kwargs:
             raise AttributeError('unexpected arguments: {}'.format(kwargs))
     {%- endif %}
