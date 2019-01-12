@@ -3,6 +3,12 @@
 {%- endif %}
 from .{{ element.name }} import getEClassifier, eClassifiers
 from .{{ element.name }} import name, nsURI, nsPrefix, eClass
+{%- with %}
+  {%- set all_features = element | all_contents(ecore.EStructuralFeature) | list %}
+  {%- if all_features | selectattr('eGenericType') %}
+from .{{ element.name }} import EGenericType
+  {%- endif %}
+{% endwith -%}
 {% if element.eClassifiers -%}
     from .{{ element.name }} import {{ element.eClassifiers | join(', ', attribute='name') }}
 {%- endif %}
@@ -42,7 +48,11 @@ eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
 {{ element.name }}.eSuperPackage = eSuperPackage
 {% if not element.eSuperPackage %}
     {%- for e in element | all_contents(ecore.EReference) | rejectattr('eOpposite') %}
+      {%- if e.eType %}
 {{ e.eContainingClass.name }}.{{ e | derivedname }}.eType = {{ e.eType.name }}
+      {% else %}
+{{ e.eContainingClass.name }}.{{ e | derivedname }}.eGenericType = EGenericType({{ e.eGenericType.eRawType | pyfqn }})
+      {%- endif %}
     {%- endfor %}
     {%- with opposites = element | all_contents(ecore.EReference) | selectattr('eOpposite') | list %}
         {%- for e in opposites %}

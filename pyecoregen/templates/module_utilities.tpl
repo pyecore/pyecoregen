@@ -45,6 +45,18 @@ derived_class={% if user_module %}_user_module.{% endif %}Derived{{ f.name | cap
 
 {#- -------------------------------------------------------------------------------------------- -#}
 
+{%- macro generate_type_parameter(t) -%}
+    {{ t.name }} = ETypeParameter({% if t.eBounds %}eBounds=({{ t.eBounds | map(attribute='eRawType') | join(', ') }}){% endif %})
+{%- endmacro %}
+
+{%- macro generate_eBounds(t) -%}
+{%- for bound in t.eBounds | map(attribute='eRawType') %}
+EGenericType(eClassifier={{ bound.name | pyfqn }})
+{%- endfor %}
+{%- endmacro %}
+
+{#- -------------------------------------------------------------------------------------------- -#}
+
 {%- macro generate_derived_single(d) -%}
     @property
     def {{ d.name }}(self):
@@ -137,6 +149,9 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 {% if c.abstract %}@abstract
 {% endif -%}
 {{ generate_class_header(c) }}
+{%- for t in c.eTypeParameters %}
+    {{ generate_type_parameter(t) -}}
+{% endfor %}
 {%- for a in c.eAttributes %}
     {{ generate_attribute(a) -}}
 {% endfor %}
