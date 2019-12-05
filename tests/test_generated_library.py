@@ -161,9 +161,9 @@ def test_static_init_bad_argument(generated_library):
         generated_library.Book(unknown=None)
 
 
-def test_static_init_dynamic_epackage_bad_value(generated_library):
-    with pytest.raises(Ecore.BadValueError):
-        DynamicEPackage(generated_library)
+def test_static_init_dynamic_epackage(generated_library):
+    package = DynamicEPackage(generated_library)
+    assert package.Book is not None
 
 
 def test_static_derived_attributes(generated_library):
