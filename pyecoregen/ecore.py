@@ -227,6 +227,7 @@ class EcoreGenerator(multigen.jinja.JinjaGenerator):
     def filter_attrqualifiers(cls, value: ecore.EAttribute):
         qualifiers = dict(
             eType=value.eType.name,
+            unique=value.unique,
             derived=value.derived,
             changeable=value.changeable,
         )
