@@ -4,8 +4,8 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-if sys.version_info < (3, 3):
-    sys.exit('Sorry, Python < 3.3 is not supported')
+if sys.version_info < (3, 5):
+    sys.exit('Sorry, Python < 3.5 is not supported')
 
 
 class PyTest(TestCommand):
