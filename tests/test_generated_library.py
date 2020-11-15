@@ -157,7 +157,7 @@ def test_static_init_single_attribute_bad_type(generated_library):
 
 
 def test_static_init_bad_argument(generated_library):
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         generated_library.Book(unknown=None)
 
 

@@ -88,10 +88,10 @@ class Derived{{ d.name | capitalize }}(EDerivedCollection):
 {#- -------------------------------------------------------------------------------------------- -#}
 
 {%- macro generate_class_init(c) %}
-    def __init__(self{{ generate_class_init_args(c) }}, **kwargs):
+    def __init__(self{{ generate_class_init_args(c) }}{% if c.eSuperTypes %}, **kwargs{% endif %}):
     {%- if not c.eSuperTypes %}
-        if kwargs:
-            raise AttributeError('unexpected arguments: {}'.format(kwargs))
+        # if kwargs:
+        #    raise AttributeError('unexpected arguments: {}'.format(kwargs))
     {%- endif %}
 
         super().__init__({% if c.eSuperTypes %}**kwargs{% endif %})
