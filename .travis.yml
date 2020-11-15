@@ -1,22 +1,23 @@
 language: python
 python:
-  - "3.5"
-  - "3.6"
-  - "3.7"
-  - "3.8"
+- '3.5'
+- '3.6'
+- '3.7'
+- '3.8'
 install:
-  - pip install --upgrade pip setuptools
-  - pip install --upgrade pytest pytest-cov coveralls
-  - pip install -e .
+- pip install --upgrade pip setuptools
+- pip install --upgrade pytest pytest-cov coveralls
+- pip install -e .
 script:
-  - python setup.py test -a -v -a --cov=pyecoregen
+- python setup.py test -a -v -a --cov=pyecoregen
 after_success:
-  - coveralls
+- coveralls
 deploy:
   provider: pypi
-  user: $PYPI_USER
-  password: $PYPI_PASSWORD
-  distributions: "sdist bdist_wheel"
+  user: __token__
+  password:
+    secure: L2BM2OL1R8PRHsLeyH4jcQe6FLeWeTqgeWcQEMft2SRSXxs3RuyemmqUBUpK5Rlt9qjQJTf3MDX5oCMksJhZTh139FA2FaHbWHEIwk1Wd1VmZuubR4kKe/OKdQExzv92S+XCJmrWr0bpg9W2Jg6rhm1K8AwYrhHHrL90lHNXrwTFlhH+2fgm8/CmeUgABNSWQnG2jZhCdWBKN49r3OGNRn7FgKF5LMuglb7Y5skR/fE2RnmSYnJVzX5k7cQMf5yfnNoIgQbwhIRaQGWHH4KhM0Qjj/LVejhmQ4R8zzZQemXkyZOgGtCbJcKtKHiq31kTnLtAvK8k4GvVp5SlGgY2nDm3t8rg2DWBIYMQpawSCn7NuAfu72ABE8lRFsvh4ArubK1YybCD9oD0sAPRyCXFz4op3L5ml8VM8NGgCFfZbcxAzkE/yScDz+NEeCDDIcQqQcc7a0KA/YsDQRAeZl7AxE6u5Y9dCj4Q7d00P6dlcbpWoIkvKidaOBvHgjN8IW8eM+g8p3TGXrFZqAEiezqgcm8+Ld5Y+4q8Swx7fNbbkTciVACx2ZkZ0rXUsBwYpNF3eAgidsPbJXZRNzkrkHJfm4WqRUYCUVIoP4zkVTdOZz6bJf2CB5/oWXV6MW/Tw7TlXjCY+cAoVTdI2PlxfBp0kvIuxm3ZnLsNG1J7cfBukGY=
+  distributions: sdist bdist_wheel
   on:
     tags: true
     python: 3.8
