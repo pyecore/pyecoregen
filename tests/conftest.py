@@ -6,7 +6,7 @@ import sys
 import pytest
 
 
-@pytest.fixture('module')
+@pytest.fixture(scope='module')
 def cwd_module_dir():
     """Change current directory to this module's folder to access inputs and write outputs."""
     cwd = os.getcwd()
