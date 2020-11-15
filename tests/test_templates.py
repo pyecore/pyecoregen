@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+from pyecore.resources import ResourceSet, URI
 from pyecore.ecore import EPackage, EClass, EReference, EEnum, EAttribute, EInt, EOperation, \
     EParameter, EString, EDataType, EAnnotation
 from pyecoregen.ecore import EcoreGenerator
@@ -405,3 +406,19 @@ def test_user_module_derived_collection(pygen_output_dir):
 
     with pytest.raises(AttributeError):
         c.other.append(d)
+
+
+@pytest.fixture(scope='module')
+def generated_E_metamodel(pygen_output_dir):
+    rset = ResourceSet()
+    resource = rset.get_resource(URI('input/E.ecore'))
+    library_model = resource.contents[0]
+    generator = EcoreGenerator()
+    generator.generate(library_model, pygen_output_dir)
+    return importlib.import_module('e')
+
+
+def test_cross_resource_packages(generated_E_metamodel):
+    instance = generated_E_metamodel.E(values=[1, 1, 2, 2, 3])
+    assert len(instance.values) == 5
+    assert instance.values == [1, 1, 2, 2, 3]
