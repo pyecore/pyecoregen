@@ -38,7 +38,7 @@ with a simple:
 
     $ pip install pyecoregen
 
-The library works with any version of Python >= 3.4.
+The library works with any version of Python >= 3.5.
 
 Usage
 -----
