@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## 0.4.4
+## 0.5.0
+### Added
+
 - Added generation of "many" derived `EStructuralFeature` as `EDerivedCollection`.
+- Added support for non unique collections of `EAttribute`.
 
 ### Fixed
-- Missing genration of "single" derived `EReference`.
+- Missing generation of "single" derived `EReference`.
+- Keyword handling for metaclasses.
+
+### Removed
+- Removed support for Python 3.4.
+
 
 ## 0.4.3
 ### Added
@@ -21,10 +29,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 - Missing default value generation for `EAttribute`.
 - Missing `eSubpackages` and `eSuperPackages` at module level.
 
-### Removed
+### Removed
 - Removed support for Python 3.3.
 
-## 0.4.2
+## 0.4.2
 ### Fixed
 
 - Missing 'templates' in the sdist package. The sdist package (`.tar.gz`) is
