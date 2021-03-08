@@ -58,9 +58,11 @@ class EcorePackageInitTask(EcoreTask):
     @staticmethod
     def imported_classifiers_package(p: ecore.EPackage):
         """Determines which classifiers have to be imported into given package."""
+        if p.eSuperPackage is not None:
+            return {}
         classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
 
-        references = itertools.chain(*(c.eAllReferences() for c in classes))
+        references = itertools.chain(*(c.eReferences for c in classes))
         references_types = (r.eType for r in references)
         imported = {c for c in references_types if getattr(c, 'ePackage', p) is not p}
 
@@ -88,7 +90,7 @@ class EcorePackageModuleTask(EcoreTask):
         """Determines which classifiers have to be imported into given module."""
         classes = {c for c in p.eClassifiers if isinstance(c, ecore.EClass)}
 
-        supertypes = itertools.chain(*(c.eAllSuperTypes() for c in classes))
+        supertypes = itertools.chain(*(c.eSuperTypes for c in classes))
         imported = {c for c in supertypes if c.ePackage is not p}
 
         attributes = itertools.chain(*(c.eAttributes for c in classes))
