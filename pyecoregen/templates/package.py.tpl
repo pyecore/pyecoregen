@@ -48,7 +48,7 @@ eSuperPackage = {{ element.eSuperPackage.name | default('None') }}
         {%- for e in opposites %}
 {{ e.eContainingClass.name }}.{{ e | derivedname }}.eType = {{ e.eType.name }}
             {%- if e is opposite_before_self(opposites) %}
-{{ e.eContainingClass.name }}.{{ e | derivedname }}.eOpposite = {{ e.eOpposite.eContainingClass.name }}.{{ e.eOpposite.name }}
+{{ e.eContainingClass.name }}.{{ e | derivedname }}.eOpposite = {{ e.eOpposite.eContainingClass.name }}.{{ e.eOpposite | derivedname }}
             {%- endif %}
         {%- endfor %}
     {%- endwith %}

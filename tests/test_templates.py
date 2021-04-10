@@ -422,3 +422,30 @@ def test_cross_resource_packages(generated_E_metamodel):
     instance = generated_E_metamodel.E(values=[1, 1, 2, 2, 3])
     assert len(instance.values) == 5
     assert instance.values == [1, 1, 2, 2, 3]
+
+
+def test_opposite_derived(pygen_output_dir):
+    rootpkg = EPackage('opposite_derived')
+    c1 = EClass('A')
+    c2 = EClass('B')
+
+    any_feature = EReference('any', c2, derived=True)
+    c1.eStructuralFeatures.append(any_feature)
+    rootpkg.eClassifiers.append(c1)
+
+    other_feature = EReference('other', c1, derived=True, eOpposite=any_feature)
+    c2.eStructuralFeatures.append(other_feature)
+    rootpkg.eClassifiers.append(c2)
+
+    assert other_feature.eOpposite is any_feature
+    assert any_feature.eOpposite is other_feature
+
+    mm = generate_meta_model(rootpkg, pygen_output_dir)
+    a = mm.A()
+    b = mm.B()
+
+    with pytest.raises(NotImplementedError):
+        a.any = b
+
+    with pytest.raises(NotImplementedError):
+        b.other = a 
